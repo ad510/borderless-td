@@ -6,12 +6,16 @@
   <script type="text/javascript" src="common.js">
   </script>
   <script type="text/javascript">
-var Spd = 10;
-var NPeople = 4;
+var UpdateRate = 40;
+var Spd = 0.25 * UpdateRate;
+var NPeople = 100;
+var NType = 4;
 
 var people = [];
 var id = 0;
 var dirX = 0, dirY = 0;
+var viewX = 0; viewY = 0;
+var viewAimX, viewAimY;
 
 function load() {
   alert("This is a quick demo of one of my game ideas.\n"
@@ -20,24 +24,23 @@ function load() {
   // generate people
   for (var i = 0; i < NPeople; i++) {
     people[i] = [];
-    people[i].x = Math.random() * getWindowWidth();
-    people[i].y = Math.random() * getWindowHeight();
+    people[i].x = Math.random() * 5000;
+    people[i].y = Math.random() * 5000;
     people[i].img = document.createElement("img");
-    people[i].img.src = "p" + i + ".png";
+    people[i].img.src = "p" + Math.floor(Math.random() * NType) + ".png";
     people[i].img.alt = "person " + i;
     people[i].img.style.position = "fixed";
-    people[i].img.style.left = people[i].x + "px";
-    people[i].img.style.top = people[i].y + "px";
     document.getElementById("layer").appendChild(people[i].img);
   }
-  setInterval("update();", 40);
+  setInterval("update();", UpdateRate);
 }
 
 function update() {
+  var i;
   // move person
-  people[id].x += dirX * Spd;
-  people[id].y += dirY * Spd;
-  if (people[id].x < 0) {
+  if (dirX != 0) people[id].x += dirX * Spd / Math.sqrt(dirX * dirX + dirY * dirY);
+  if (dirY != 0) people[id].y += dirY * Spd / Math.sqrt(dirX * dirX + dirY * dirY);
+  /*if (people[id].x < 0) {
     people[id].x = 0;
   }
   if (people[id].x > getWindowWidth() - people[id].img.width) {
@@ -48,11 +51,9 @@ function update() {
   }
   if (people[id].y > getWindowHeight() - people[id].img.height) {
     people[id].y = getWindowHeight() - people[id].img.height;
-  }
-  people[id].img.style.left = people[id].x + "px";
-  people[id].img.style.top = people[id].y + "px";
+  }*/
   // switch identity if collision
-  for (var i = 0; i < NPeople; i++) {
+  for (i = 0; i < NPeople; i++) {
     if (i != id && people[id].x + people[id].img.width > people[i].x
                 && people[id].x < people[i].x + people[i].img.width
                 && people[id].y + people[id].img.height > people[i].y
@@ -60,6 +61,15 @@ function update() {
       id = i;
       break;
     }
+  }
+  // set positions of people
+  viewAimX = people[id].x + (people[id].img.width - getWindowWidth()) / 2;
+  viewAimY = people[id].y + (people[id].img.height - getWindowHeight()) / 2;
+  viewX += (viewAimX - viewX) * 0.1;
+  viewY += (viewAimY - viewY) * 0.1;
+  for (i = 0; i < NPeople; i++) {
+    people[i].img.style.left = (people[i].x - viewX) + "px";
+    people[i].img.style.top = (people[i].y - viewY) + "px";
   }
 }
 
