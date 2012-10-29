@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+ <head>
+  <title>Identity Theft (tentative title)</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <script type="text/javascript" src="common.js">
+  </script>
+  <script type="text/javascript">
+var Spd = 10;
+var NPeople = 4;
+
+var people = [];
+var id = 0;
+var dirX = 0, dirY = 0;
+
+function load() {
+  alert("This is a quick demo of one of my game ideas.\n"
+        + "Use WASD to move. If you run into someone else, you will switch places with them.\n"
+        + "There is no win condition as of yet, but I am thinking of turning this into a game that features how digital identities are easy to steal.");
+  // generate people
+  for (var i = 0; i < NPeople; i++) {
+    people[i] = [];
+    people[i].x = Math.random() * getWindowWidth();
+    people[i].y = Math.random() * getWindowHeight();
+    people[i].img = document.createElement("img");
+    people[i].img.src = "p" + i + ".png";
+    people[i].img.alt = "person " + i;
+    people[i].img.style.position = "fixed";
+    people[i].img.style.left = people[i].x + "px";
+    people[i].img.style.top = people[i].y + "px";
+    document.getElementById("layer").appendChild(people[i].img);
+  }
+  setInterval("update();", 40);
+}
+
+function update() {
+  // move person
+  people[id].x += dirX * Spd;
+  people[id].y += dirY * Spd;
+  if (people[id].x < 0) {
+    people[id].x = 0;
+  }
+  if (people[id].x > getWindowWidth() - people[id].img.width) {
+    people[id].x = getWindowWidth() - people[id].img.width;
+  }
+  if (people[id].y < 0) {
+    people[id].y = 0;
+  }
+  if (people[id].y > getWindowHeight() - people[id].img.height) {
+    people[id].y = getWindowHeight() - people[id].img.height;
+  }
+  people[id].img.style.left = people[id].x + "px";
+  people[id].img.style.top = people[id].y + "px";
+  // switch identity if collision
+  for (var i = 0; i < NPeople; i++) {
+    if (i != id && people[id].x + people[id].img.width > people[i].x
+                && people[id].x < people[i].x + people[i].img.width
+                && people[id].y + people[id].img.height > people[i].y
+                && people[id].y < people[i].y + people[i].img.height) {
+      id = i;
+      break;
+    }
+  }
+}
+
+function keyDown(e) {
+  var key = findKey(e);
+  if (key == "W") dirY = -1;
+  if (key == "A") dirX = -1;
+  if (key == "S") dirY = 1;
+  if (key == "D") dirX = 1;
+}
+
+function keyUp(e) {
+  var key = findKey(e);
+  if (key == "W") dirY = 0;
+  if (key == "A") dirX = 0;
+  if (key == "S") dirY = 0;
+  if (key == "D") dirX = 0;
+}
+  </script>
+ </head>
+ <body onload="load()" onkeydown="keyDown(event)" onkeyup="keyUp(event)">
+  <div id="layer"> </div>
+ </body>
+</html>
