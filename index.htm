@@ -5,6 +5,8 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <script type="text/javascript" src="common.js">
   </script>
+  <!--<script type="text/javascript" src="game.js">
+  </script>-->
   <script type="text/javascript">
 var UpdateRate = 40;
 var Spd = 0.25 * UpdateRate;
@@ -23,14 +25,14 @@ function load() {
         + "There is no win condition as of yet, but I am thinking of turning this into a game that features how digital identities are easy to steal.");
   // generate people
   for (var i = 0; i < NPeople; i++) {
-    people[i] = [];
+    people[i] = {};
     people[i].x = Math.random() * 5000;
     people[i].y = Math.random() * 5000;
     people[i].img = document.createElement("img");
     people[i].img.src = "p" + Math.floor(Math.random() * NType) + ".png";
     people[i].img.alt = "person " + i;
     people[i].img.style.position = "fixed";
-    document.getElementById("layer").appendChild(people[i].img);
+    document.getElementById("draw").appendChild(people[i].img);
   }
   setInterval("update();", UpdateRate);
 }
@@ -71,6 +73,7 @@ function update() {
     people[i].img.style.left = (people[i].x - viewX) + "px";
     people[i].img.style.top = (people[i].y - viewY) + "px";
   }
+  document.body.style.backgroundPosition = -viewX + "px " + -viewY + "px";
 }
 
 function keyDown(e) {
@@ -90,7 +93,7 @@ function keyUp(e) {
 }
   </script>
  </head>
- <body onload="load()" onkeydown="keyDown(event)" onkeyup="keyUp(event)">
-  <div id="layer"> </div>
+ <body onload="load()" onkeydown="keyDown(event)" onkeyup="keyUp(event)" style="background-image: url('ground.jpg')">
+  <div id="draw"> </div>
  </body>
 </html>
