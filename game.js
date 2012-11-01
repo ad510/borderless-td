@@ -53,11 +53,11 @@ function generate() {
     }
     for (j = Math.floor(viewY / TileSize); j <= Math.ceil((viewY + getWindowHeight()) / TileSize); j++) {
       if (tiles[i][j] == undefined) {
-        tileX = viewX + i * TileSize;
-        tileY = viewY + j * TileSize;
+        tileX = i * TileSize;
+        tileY = j * TileSize;
         tiles[i][j] = {};
         tiles[i][j].trees = [];
-        nObjs = TileMinTrees + Math.random() * (TileMaxTrees - TileMinTrees + 1);
+        nObjs = Math.floor(TileMinTrees + Math.random() * (TileMaxTrees - TileMinTrees));
         for (k = 0; k < nObjs; k++) {
           tiles[i][j].trees[k] = objNew("tree" + Math.floor(Math.random() * NTreeType) + ".png", "tree", tileX + Math.random() * TileSize, tileY + Math.random() * TileSize);
         }
