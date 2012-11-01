@@ -17,7 +17,7 @@ var player;
 var tiles = [];
 
 function load() {
-  player = objNew("player.png", "player", 0, 0);
+  player = objNew("img/player.png", "player", 0, 0);
   player.targetX = 0;
   player.targetY = 0;
   update();
@@ -52,7 +52,7 @@ function generate() {
         tiles[i][j].trees = [];
         nObjs = Math.floor(TileMinTrees + Math.random() * (TileMaxTrees - TileMinTrees));
         for (k = 0; k < nObjs; k++) {
-          tiles[i][j].trees[k] = objNew("tree" + Math.floor(Math.random() * NTreeType) + ".png", "tree", tileX + Math.random() * TileSize, tileY + Math.random() * TileSize);
+          tiles[i][j].trees[k] = objNew("img/tree" + Math.floor(Math.random() * NTreeType) + ".png", "tree", tileX + Math.random() * TileSize, tileY + Math.random() * TileSize);
         }
       }
     }
