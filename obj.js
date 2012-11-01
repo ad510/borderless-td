@@ -46,6 +46,7 @@ function objDraw(obj) {
       && obj.y + obj.img.height > viewY && obj.y < viewY + getWindowHeight()) {
     obj.img.style.left = (obj.x - viewX) + "px";
     obj.img.style.top = (obj.y - viewY) + "px";
+    obj.img.style.zIndex = Math.floor(obj.y);
     obj.img.style.display = "";
   }
   else {
