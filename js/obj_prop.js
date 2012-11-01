@@ -14,5 +14,10 @@ var imgProp =
   {
     "baseX": 80,
     "baseY": 85
+  },
+  "drop.png":
+  {
+    "baseX": 20,
+    "baseY": 20
   }
 };

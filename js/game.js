@@ -15,6 +15,7 @@ var viewX, viewY;
 // drawn objects
 var player;
 var tiles = [];
+var drops = [];
 
 function load() {
   player = objNew("img/player.png", "player", 0, 0);
@@ -28,6 +29,13 @@ function mouseDown(e) {
   getMousePos(e);
   player.targetX = mouseX + viewX;
   player.targetY = mouseY + viewY;
+}
+
+function keyDown(e) {
+  var key = findKey(e);
+  if (key == "D") {
+    drops[drops.length] = objNew("img/drop.png", "drop", player.x, player.y);
+  }
 }
 
 function update() {
@@ -81,5 +89,8 @@ function draw() {
         objDraw(tiles[i][j].trees[k]);
       }
     }
+  }
+  for (i = 0; i < drops.length; i++) {
+    objDraw(drops[i]);
   }
 }
