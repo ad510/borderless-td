@@ -9,10 +9,10 @@ z index
 
 // constants (all lengths in pixels, all times in milliseconds)
 var UpdateRate = 50;
-var PlSpeed = 10;
+var PlSpeed = 5;
 var TileSize = 500;
-var TileMinTrees = 1;
-var TileMaxTrees = 1;
+var TileMinTrees = 4;
+var TileMaxTrees = 4;
 var NTreeType = 2;
 
 // game state variables
