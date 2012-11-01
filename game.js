@@ -1,18 +1,11 @@
 "use strict";
 
-/*
-todo:
-x & y pos should specify pos at obj center defined in variable (not corner of img)
-debug tree generation
-z index
-*/
-
 // constants (all lengths in pixels, all times in milliseconds)
 var UpdateRate = 50;
 var PlSpeed = 5;
 var TileSize = 500;
-var TileMinTrees = 4;
-var TileMaxTrees = 4;
+var TileMinTrees = 2;
+var TileMaxTrees = 6;
 var NTreeType = 2;
 
 // game state variables
@@ -24,7 +17,7 @@ var player;
 var tiles = [];
 
 function load() {
-  player = objNew("p0.png", "player", 0, 0);
+  player = objNew("player.png", "player", 0, 0);
   player.targetX = 0;
   player.targetY = 0;
   update();
@@ -33,8 +26,8 @@ function load() {
 
 function mouseDown(e) {
   getMousePos(e);
-  player.targetX = mouseX + viewX - player.img.width / 2;
-  player.targetY = mouseY + viewY - player.img.height / 2;
+  player.targetX = mouseX + viewX;
+  player.targetY = mouseY + viewY;
 }
 
 function update() {
@@ -78,8 +71,8 @@ function draw() {
   var i, j, k;
   getDrawDiv().style.width = getWindowWidth() + "px";
   getDrawDiv().style.height = getWindowHeight() + "px";
-  viewX = player.x + (player.img.width - getWindowWidth()) / 2;
-  viewY = player.y + (player.img.height - getWindowHeight()) / 2;
+  viewX = player.x - getWindowWidth() / 2;
+  viewY = player.y - getWindowHeight() / 2;
   document.body.style.backgroundPosition = -viewX + "px " + -viewY + "px";
   objDraw(player);
   for (i in tiles) {

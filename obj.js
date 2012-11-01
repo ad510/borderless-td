@@ -42,10 +42,11 @@ function objNew(imgPath, imgAlt, x, y) {
 }
 
 function objDraw(obj) {
-  if (obj.x + obj.img.width > viewX && obj.x < viewX + getWindowWidth()
-      && obj.y + obj.img.height > viewY && obj.y < viewY + getWindowHeight()) {
-    obj.img.style.left = (obj.x - viewX) + "px";
-    obj.img.style.top = (obj.y - viewY) + "px";
+  var imgPath = obj.img.src.substring(obj.img.src.lastIndexOf("/") + 1);
+  if (obj.x - imgProp[imgPath].baseX + obj.img.width > viewX && obj.x - imgProp[imgPath].baseX < viewX + getWindowWidth()
+      && obj.y - imgProp[imgPath].baseY + obj.img.height > viewY && obj.y - imgProp[imgPath].baseY < viewY + getWindowHeight()) {
+    obj.img.style.left = (obj.x - imgProp[imgPath].baseX - viewX) + "px";
+    obj.img.style.top = (obj.y - imgProp[imgPath].baseY - viewY) + "px";
     obj.img.style.zIndex = Math.floor(obj.y);
     obj.img.style.display = "";
   }
