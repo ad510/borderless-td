@@ -17,6 +17,13 @@ var player;
 var tiles = [];
 var drops = [];
 
+function closeInfo() {
+  var infoTag = document.getElementById("info");
+  infoTag.parentNode.removeChild(infoTag);
+  player.targetX = player.x;
+  player.targetY = player.y;
+}
+
 function load() {
   player = objNew("img/player.png", "player", 0, 0);
   player.targetX = 0;
