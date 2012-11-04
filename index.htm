@@ -19,12 +19,16 @@ body {
     <script type="text/javascript" src="js/obj_prop.js">
     </script>
   </head>
-  <body onload="load()" onMouseDown="mouseDown(event)" onKeyDown="keyDown(event)">
+  <body onload="load()" onKeyDown="keyDown(event)">
     <div id="info" style="position: fixed; margin: 10%; padding: 20px; background-color: yellow; z-index: 10000">
      <p>One of the major reasons I chose to make this game over other games is that I have been fascinated with infinitely large randomly generated worlds, yet I have never written code to generate one myself. Therefore, while this demo page does not implement a complete game, it is a proof of concept that shows I can generate an infinitely large forest. Click to move, and press D to drop an item as proof you've been there. Then explore the forest that never ends!</p>
      <p>I recommend playing this in Google Chrome because it seems to lag in Firefox if you play it for too long.</p>
      <p><input type="button" value="Close" onclick="closeInfo()"/></p>
     </div>
-    <div id="draw"></div>
+    <div id="draw" onMouseDown="mouseDown(event)"></div>
+    <!--<div style="position: fixed; left: 0px; bottom: 0px; z-index: 100000">
+      Wood: <span id="wood"> </span><br/>
+      <img src="img/drop.png" alt="build wood cutter" onclick="build(0)"/>
+    </div>-->
   </body>
 </html>

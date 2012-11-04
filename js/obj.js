@@ -55,6 +55,12 @@ function objDraw(obj) {
   }
 }
 
+function objDrawFixed(obj) {
+  obj.img.style.left = obj.x + "px";
+  obj.img.style.top = obj.y + "px";
+  obj.img.style.zIndex = Math.floor(viewY + getWindowHeight() * 2);
+}
+
 function getDrawDiv() {
   return document.getElementById("draw");
 }
