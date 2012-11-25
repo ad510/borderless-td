@@ -17,7 +17,12 @@ var imgProp =
     "baseX": 80,
     "baseY": 85
   },
-  "drop.png":
+  "cutter.png":
+  {
+    "baseX": 20,
+    "baseY": 20
+  },
+  "monster.png":
   {
     "baseX": 20,
     "baseY": 20

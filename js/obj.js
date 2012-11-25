@@ -29,6 +29,7 @@ function objNew(x, y, imgPath, imgAlt) {
 }
 */
 
+// returns new object with specified properties
 function objNew(imgPath, imgAlt, x, y) {
   var ret = {};
   ret.x = x;
@@ -37,10 +38,12 @@ function objNew(imgPath, imgAlt, x, y) {
   ret.img.src = imgPath;
   ret.img.alt = imgAlt;
   ret.img.style.position = "fixed";
+  ret.img.style.display = "none";
   getDrawDiv().appendChild(ret.img);
   return ret;
 }
 
+// draw specified object
 function objDraw(obj) {
   var imgPath = obj.img.src.substring(obj.img.src.lastIndexOf("/") + 1);
   if (obj.x - imgProp[imgPath].baseX + obj.img.width > viewX && obj.x - imgProp[imgPath].baseX < viewX + getWindowWidth()
@@ -53,6 +56,16 @@ function objDraw(obj) {
   else {
     obj.img.style.display = "none";
   }
+}
+
+// returns distance between 2 objects
+function objDist(obj1, obj2) {
+  return Math.sqrt(objDistSq(obj1, obj2));
+}
+
+// returns square of distance between 2 objects
+function objDistSq(obj1, obj2) {
+  return Math.pow(obj2.x - obj1.x, 2) + Math.pow(obj2.y - obj1.y, 2);
 }
 
 function arrayMove(array1, index1, array2) {
