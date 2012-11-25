@@ -58,6 +58,11 @@ function objDraw(obj) {
   }
 }
 
+// stop drawing specified object
+function objRemove(obj) {
+  getDrawDiv().removeChild(obj.img);
+}
+
 // returns distance between 2 objects
 function objDist(obj1, obj2) {
   return Math.sqrt(objDistSq(obj1, obj2));

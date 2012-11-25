@@ -17,6 +17,9 @@ var TileMinTrees = 2;
 var TileMaxTrees = 6;
 var TileMinMonsters = 0;
 var TileMaxMonsters = 2;
+var TreeCutTime = 10000;
+var TreeWoodRate = 0.001;
+var CutterCost = 10;
 var NTreeType = 2;
 
 // game state variables
@@ -24,6 +27,7 @@ var mouseX, mouseY;
 var viewX, viewY;
 var time = 0;
 var timeMonster = 0;
+var wood = 10;
 var tileRng = {
   minX: 100, maxX: -100, minY: 100, maxY: -100,
   row: [], col: []
@@ -59,29 +63,6 @@ function keyDown(e) {
   /*if (key == "D") {
     drops[drops.length] = objNew("img/drop.png", "drop", player.x, player.y);
   }*/
-}
-
-function buildCutter() {
-  var tree, dist;
-  var col = Math.floor(player.x / TileSize);
-  var row = Math.floor(player.y / TileSize);
-  var i, j, k;
-  // find tree on nearby tile closest to player
-  var bestDist = TileSize * TileSize;
-  for (i = col - 1; i <= col + 1; i++) {
-    for (j = row - 1; j <= row + 1; j++) {
-      tileGen(col, row);
-      for (k in tiles[i][j].trees) {
-        dist = objDistSq(player, tiles[i][j].trees[k]);
-        if (dist < bestDist) {
-          tree = tiles[i][j].trees[k];
-          bestDist = dist;
-        }
-      }
-    }
-  }
-  // if nearby tree exists and does not have cutter, create a cutter on the tree
-  if (tree != undefined && tree.cutter == undefined) tree.cutter = objNew("img/cutter.png", "cutter", tree.x, tree.y);
 }
 
 // update game at fixed time intervals
@@ -159,9 +140,25 @@ function simulate() {
     player.x += (player.targetX - player.x) / dist * PlSpeed;
     player.y += (player.targetY - player.y) / dist * PlSpeed;
   }
-  // monsters
   for (i in tiles) {
     for (j in tiles[i]) {
+      // cutters
+      for (k = 0; k < tiles[i][j].trees.length; k++) {
+        if (tiles[i][j].trees[k].cutter != undefined) {
+          tiles[i][j].trees[k].cutTime += UpdateRate;
+          wood += TreeWoodRate * UpdateRate;
+          if (tiles[i][j].trees[k].cutTime >= TreeCutTime) {
+            // finished cutting down tree, jump to next tree
+            cutterNew(tiles[i][j].trees[k].x, tiles[i][j].trees[k].y);
+            objRemove(tiles[i][j].trees[k].cutter);
+            objRemove(tiles[i][j].trees[k]);
+            arrayRemove(tiles[i][j].trees, k);
+            k--;
+            continue;
+          }
+        }
+      }
+      // monsters
       for (k = 0; k < tiles[i][j].monsters.length; k++) {
         // move monster
         tiles[i][j].monsters[k].x += tiles[i][j].monsters[k].velX;
@@ -172,7 +169,7 @@ function simulate() {
         if ((Math.abs(tiles[i][j].monsters[k].velX) > Math.abs(tiles[i][j].monsters[k].velY))
             ? (col < tileRng.row[j].minX - 1 || col > tileRng.row[j].maxX)
             : (row < tileRng.col[i].minY - 1 || row > tileRng.col[i].maxY)) {
-          getDrawDiv().removeChild(tiles[i][j].monsters[k].img);
+          objRemove(tiles[i][j].monsters[k]);
           arrayRemove(tiles[i][j].monsters, k);
           k--;
           continue;
@@ -214,6 +211,8 @@ function draw() {
       }
     }
   }
+  // update text
+  document.getElementById("wood").firstChild.nodeValue = Math.floor(wood);
 }
 
 // create new empty tile at specified indices if it has not already been created
@@ -221,6 +220,7 @@ function tileInit(i, j) {
   if (tiles[i] == undefined) tiles[i] = [];
   if (tiles[i][j] == undefined) {
     tiles[i][j] = {};
+    tiles[i][j].gen = false;
     // add empty object arrays
     // (don't add trees and update tile range until player actually moves there)
     tiles[i][j].trees = [];
@@ -235,11 +235,13 @@ function tileGen(i, j) {
   var nObjs;
   var k;
   tileInit(i, j);
-  if (tiles[i][j].trees.length == 0) {
+  if (!tiles[i][j].gen) {
+    tiles[i][j].gen = true;
     // add trees to new tile
     nObjs = randInt(TileMinTrees, TileMaxTrees);
     for (k = 0; k < nObjs; k++) {
       tiles[i][j].trees[k] = objNew("img/tree" + Math.floor(Math.random() * NTreeType) + ".png", "tree", tileX + Math.random() * TileSize, tileY + Math.random() * TileSize);
+      tiles[i][j].trees[k].cutTime = 0;
     }
     // update tile range
     if (i < tileRng.minX) tileRng.minX = i;
@@ -261,6 +263,40 @@ function tileGen(i, j) {
     if (j < tileRng.col[i].minY) tileRng.col[i].minY = j;
     if (j > tileRng.col[i].maxY) tileRng.col[i].maxY = j;
   }
+}
+
+// build cutter near player, if player has enough wood
+function cutterBuild(x, y) {
+  if (wood >= CutterCost) {
+    wood -= CutterCost;
+    cutterNew(player.x, player.y);
+  }
+}
+
+// make new cutter on tree near specified point (if there is a nearby tree)
+function cutterNew(x, y) {
+  var tree, distSq;
+  var col = Math.floor(x / TileSize);
+  var row = Math.floor(y / TileSize);
+  var i, j, k;
+  // find closest tree within TileSize pixels of requested position
+  var bestDistSq = TileSize * TileSize;
+  for (i = col - 1; i <= col + 1; i++) {
+    for (j = row - 1; j <= row + 1; j++) {
+      tileGen(col, row);
+      for (k in tiles[i][j].trees) {
+        if (tiles[i][j].trees[k].cutter == undefined) {
+          distSq = objDistSq(tiles[i][j].trees[k], {x: x, y: y});
+          if (distSq < bestDistSq) {
+            tree = tiles[i][j].trees[k];
+            bestDistSq = distSq;
+          }
+        }
+      }
+    }
+  }
+  // if found nearby tree, create a cutter on the tree
+  if (tree != undefined) tree.cutter = objNew("img/cutter.png", "cutter", tree.x, tree.y);
 }
 
 // returns random integer in specified range
