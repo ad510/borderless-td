@@ -55,10 +55,17 @@ function objDraw(obj) {
   }
 }
 
-function objDrawFixed(obj) {
-  obj.img.style.left = obj.x + "px";
-  obj.img.style.top = obj.y + "px";
-  obj.img.style.zIndex = Math.floor(viewY + getWindowHeight() * 2);
+function arrayMove(array1, index1, array2) {
+  array2[array2.length] = array1[index1];
+  arrayRemove(array1, index1);
+}
+
+// decrement index and continue (in loop) after calling this
+function arrayRemove(array, index) {
+  for (var i = index; i < array.length - 1; i++) {
+    array[i] = array[i + 1];
+  }
+  array.splice(array.length - 1, 1);
 }
 
 function getDrawDiv() {
