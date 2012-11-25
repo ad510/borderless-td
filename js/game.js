@@ -11,12 +11,12 @@ comments
 // constants (all lengths in pixels, all times in milliseconds)
 var UpdateRate = 50;
 var PlSpeed = 5;
-var MoSpeed = 10;
+var MoSpeed = 5;
 var TileSize = 500;
 var TileMinTrees = 2;
 var TileMaxTrees = 6;
-var TileMinMonsters = 1;
-var TileMaxMonsters = 1;
+var TileMinMonsters = 0;
+var TileMaxMonsters = 2;
 var NTreeType = 2;
 
 // game state variables
@@ -77,7 +77,7 @@ function update() {
 // generate new game objects
 function generate() {
   var tileX, tileY;
-  var nObjs;
+  var nObjs, dir;
   var i, j, k;
   // check if should make new tiles
   for (i = Math.floor(viewX / TileSize); i <= Math.ceil((viewX + getWindowWidth()) / TileSize); i++) {
@@ -91,21 +91,68 @@ function generate() {
         for (k = 0; k < nObjs; k++) {
           tiles[i][j].trees[k] = objNew("img/tree" + Math.floor(Math.random() * NTreeType) + ".png", "tree", tileX + Math.random() * TileSize, tileY + Math.random() * TileSize);
         }
+        // update tile range
+        if (i < tileRng.minX) tileRng.minX = i;
+        if (i > tileRng.maxX) tileRng.maxX = i;
+        if (j < tileRng.minY) tileRng.minY = j;
+        if (j > tileRng.maxY) tileRng.maxY = j;
+        if (tileRng.row[j] == undefined) {
+          tileRng.row[j] = {};
+          tileRng.row[j].minX = i;
+          tileRng.row[j].maxX = i;
+        }
+        if (i < tileRng.row[j].minX) tileRng.row[j].minX = i;
+        if (i > tileRng.row[j].maxX) tileRng.row[j].maxX = i;
+        if (tileRng.col[i] == undefined) {
+          tileRng.col[i] = {};
+          tileRng.col[i].minY = j;
+          tileRng.col[i].maxY = j;
+        }
+        if (j < tileRng.col[i].minY) tileRng.col[i].minY = j;
+        if (j > tileRng.col[i].maxY) tileRng.col[i].maxY = j;
       }
     }
   }
-  // generate monsters
+  // generate horizontal-moving monsters
   if (MoSpeed * (time - timeMonster) >= TileSize) {
     timeMonster += MoSpeed * (time - timeMonster);
     for (i = tileRng.minY; i <= tileRng.maxY; i++) {
       nObjs = randInt(TileMinMonsters, TileMaxMonsters);
       for (j = 0; j < nObjs; j++) {
         var monster;
-        tileX = tileRng.row[i].minX;
+        if (Math.random() < 0.5) {
+          tileX = tileRng.row[i].minX - 1;
+          dir = MoSpeed;
+        }
+        else {
+          tileX = tileRng.row[i].maxX;
+          dir = -MoSpeed;
+        }
         monster = objNew("img/drop.png", "monster", (tileX + Math.random()) * TileSize, (i + Math.random()) * TileSize);
-        monster.velX = MoSpeed;
+        monster.velX = dir;
         monster.velY = 0;
+        tileInit(tileX, i);
         tiles[tileX][i].monsters[tiles[tileX][i].monsters.length] = monster;
+      }
+    }
+    // generate vertical-moving monsters
+    for (i = tileRng.minX; i <= tileRng.maxX; i++) {
+      nObjs = randInt(TileMinMonsters, TileMaxMonsters);
+      for (j = 0; j < nObjs; j++) {
+        var monster;
+        if (Math.random() < 0.5) {
+          tileY = tileRng.col[i].minY - 1;
+          dir = MoSpeed;
+        }
+        else {
+          tileY = tileRng.col[i].maxY;
+          dir = -MoSpeed;
+        }
+        monster = objNew("img/drop.png", "monster", (i + Math.random()) * TileSize, (tileY + Math.random()) * TileSize);
+        monster.velX = 0;
+        monster.velY = dir;
+        tileInit(i, tileY);
+        tiles[i][tileY].monsters[tiles[i][tileY].monsters.length] = monster;
       }
     }
   }
@@ -132,8 +179,8 @@ function simulate() {
         row = Math.floor(tiles[i][j].monsters[k].y / TileSize);
         // delete monster if off map
         if ((Math.abs(tiles[i][j].monsters[k].velX) > Math.abs(tiles[i][j].monsters[k].velY))
-            ? (col < tileRng.row[j].minX || col > tileRng.row[j].maxX)
-            : (row < tileRng.col[i].minY || row > tileRng.col[i].maxY)) {
+            ? (col < tileRng.row[j].minX - 1 || col > tileRng.row[j].maxX)
+            : (row < tileRng.col[i].minY - 1 || row > tileRng.col[i].maxY)) {
           getDrawDiv().removeChild(tiles[i][j].monsters[k].img);
           arrayRemove(tiles[i][j].monsters, k);
           k--;
@@ -182,27 +229,9 @@ function tileInit(i, j) {
   if (tiles[i][j] == undefined) {
     tiles[i][j] = {};
     // add empty object arrays
+    // (don't add trees and update tile range until player actually moves there)
     tiles[i][j].trees = [];
     tiles[i][j].monsters = [];
-    // update tile range
-    if (i < tileRng.minX) tileRng.minX = i;
-    if (i > tileRng.maxX) tileRng.maxX = i;
-    if (j < tileRng.minY) tileRng.minY = j;
-    if (j > tileRng.maxY) tileRng.maxY = j;
-    if (tileRng.row[j] == undefined) {
-      tileRng.row[j] = {};
-      tileRng.row[j].minX = i;
-      tileRng.row[j].maxX = i;
-    }
-    if (i < tileRng.row[j].minX) tileRng.row[j].minX = i;
-    if (i > tileRng.row[j].maxX) tileRng.row[j].maxX = i;
-    if (tileRng.col[i] == undefined) {
-      tileRng.col[i] = {};
-      tileRng.col[i].minY = j;
-      tileRng.col[i].maxY = j;
-    }
-    if (j < tileRng.col[i].minY) tileRng.col[i].minY = j;
-    if (j > tileRng.col[i].maxY) tileRng.col[i].maxY = j;
   }
 }
 
