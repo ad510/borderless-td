@@ -267,13 +267,13 @@ function tileGen(i, j) {
 
 // build cutter near player, if player has enough wood
 function cutterBuild(x, y) {
-  if (wood >= CutterCost) {
+  if (wood >= CutterCost && cutterNew(player.x, player.y)) {
     wood -= CutterCost;
-    cutterNew(player.x, player.y);
   }
 }
 
-// make new cutter on tree near specified point (if there is a nearby tree)
+// make new cutter on tree near specified point
+// returns whether cutter was created (it isn't created if no nearby tree)
 function cutterNew(x, y) {
   var tree, distSq;
   var col = Math.floor(x / TileSize);
@@ -283,7 +283,7 @@ function cutterNew(x, y) {
   var bestDistSq = TileSize * TileSize;
   for (i = col - 1; i <= col + 1; i++) {
     for (j = row - 1; j <= row + 1; j++) {
-      tileGen(col, row);
+      tileGen(i, j);
       for (k in tiles[i][j].trees) {
         if (tiles[i][j].trees[k].cutter == undefined) {
           distSq = objDistSq(tiles[i][j].trees[k], {x: x, y: y});
@@ -296,7 +296,9 @@ function cutterNew(x, y) {
     }
   }
   // if found nearby tree, create a cutter on the tree
-  if (tree != undefined) tree.cutter = objNew("img/cutter.png", "cutter", tree.x, tree.y);
+  if (tree == undefined) return false;
+  tree.cutter = objNew("img/cutter.png", "cutter", tree.x, tree.y);
+  return true;
 }
 
 // returns random integer in specified range
