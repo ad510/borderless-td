@@ -20,6 +20,7 @@ var TileMaxMonsters = 1.1;
 var TreeCutTime = 10000;
 var TreeWoodRate = 0.001;
 var CutterCost = 10;
+var TowerCost = 10;
 var NTreeType = 2;
 
 // game state variables
@@ -37,6 +38,7 @@ var tileRng = {
 var player;
 var tiles = [];
 
+// close information box
 function closeInfo() {
   var infoTag = document.getElementById("info");
   infoTag.parentNode.removeChild(infoTag);
@@ -206,6 +208,9 @@ function draw() {
           objDraw(tiles[i][j].trees[k].cutter);
         }
       }
+      for (k in tiles[i][j].towers) {
+        objDraw(tiles[i][j].towers[k]);
+      }
       for (k in tiles[i][j].monsters) {
         objDraw(tiles[i][j].monsters[k]);
       }
@@ -224,6 +229,7 @@ function tileInit(i, j) {
     // add empty object arrays
     // (don't add trees and update tile range until player actually moves there)
     tiles[i][j].trees = [];
+    tiles[i][j].towers = [];
     tiles[i][j].monsters = [];
   }
 }
@@ -266,7 +272,7 @@ function tileGen(i, j) {
 }
 
 // build cutter near player, if player has enough wood
-function cutterBuild(x, y) {
+function cutterBuild() {
   if (wood >= CutterCost && cutterNew(player.x, player.y)) {
     wood -= CutterCost;
   }
@@ -299,6 +305,15 @@ function cutterNew(x, y) {
   if (tree == undefined) return false;
   tree.cutter = objNew("img/cutter.png", "cutter", tree.x, tree.y);
   return true;
+}
+
+// build tower at player position, if player has enough wood
+function towerBuild() {
+  if (wood >= TowerCost) {
+    var tile = tiles[Math.floor(player.x / TileSize)][Math.floor(player.y / TileSize)];
+    tile.towers[tile.towers.length] = objNew("img/tower.png", "tower", player.x, player.y);
+    wood -= TowerCost;
+  }
 }
 
 // returns random integer in specified range

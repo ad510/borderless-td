@@ -22,6 +22,11 @@ var imgProp =
     "baseX": 20,
     "baseY": 20
   },
+  "tower.png":
+  {
+    "baseX": 20,
+    "baseY": 20
+  },
   "monster.png":
   {
     "baseX": 20,
