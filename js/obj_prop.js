@@ -27,6 +27,11 @@ var imgProp =
     "baseX": 20,
     "baseY": 20
   },
+  "arrow.png":
+  {
+    "baseX": 2,
+    "baseY": 2
+  },
   "monster.png":
   {
     "baseX": 20,

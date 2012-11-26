@@ -73,11 +73,13 @@ function objDistSq(obj1, obj2) {
   return Math.pow(obj2.x - obj1.x, 2) + Math.pow(obj2.y - obj1.y, 2);
 }
 
+// move array1[index1] from array1 to array2
 function arrayMove(array1, index1, array2) {
   array2[array2.length] = array1[index1];
   arrayRemove(array1, index1);
 }
 
+// remove array[index] and move later elements forward by 1
 // decrement index and continue (in loop) after calling this
 function arrayRemove(array, index) {
   for (var i = index; i < array.length - 1; i++) {
@@ -86,6 +88,7 @@ function arrayRemove(array, index) {
   array.splice(array.length - 1, 1);
 }
 
+// returns div tag that objects are drawn in
 function getDrawDiv() {
   return document.getElementById("draw");
 }
