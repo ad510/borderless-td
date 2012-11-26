@@ -11,7 +11,7 @@ function getMousePos(e) {
   }
   else if (e.clientX || e.clientY) {
     mouseX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-    mouseY = (e.clientY + document.body.scrollTop + document.documentElement.scrollTop);
+    mouseY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
   }
 }
 
