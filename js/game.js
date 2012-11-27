@@ -7,6 +7,7 @@ resource text & background styling
 make new offset monsters when adding new tile
 quadratic arrows: y = x - x^2 has y > 0 for 0 < x < 1 and vertex (0.5, 0.25)
 sound
+use divs instead of imgs (got permission from Ami)
 */
 
 // constants (all lengths in pixels, all times in milliseconds)
@@ -22,10 +23,12 @@ var TileMaxMonsters = 1.1;
 var TreeCutTime = 10000;
 var TreeWoodRate = 0.001 * UpdateRate;
 var CutterCost = 10;
+var CutterJump = TileSize;
 var TowerCost = 10;
 var TowerReload = 2000;
 var TowerRange = 500;
 var ArrowSplash = MonsterSpd / ArrowSpd / UpdateRate * TowerRange;
+var MonsterFollowDist = 500;
 var NTreeType = 2;
 
 // game state variables
@@ -86,8 +89,8 @@ function generate() {
   var nObjs, dir;
   var i, j;
   // check if should make new tiles
-  for (i = Math.floor(viewX / TileSize); i <= Math.ceil((viewX + getWindowWidth()) / TileSize); i++) {
-    for (j = Math.floor(viewY / TileSize); j <= Math.ceil((viewY + getWindowHeight()) / TileSize); j++) {
+  for (i = Math.floor(viewX / TileSize - 0.5); i <= Math.floor((viewX + getWindowWidth()) / TileSize + 0.5); i++) {
+    for (j = Math.floor(viewY / TileSize - 0.5); j <= Math.floor((viewY + getWindowHeight()) / TileSize + 0.5); j++) {
       tileGen(i, j);
     }
   }
@@ -104,7 +107,7 @@ function generate() {
           dir = MonsterSpd;
         }
         else {
-          tileX = tileRng.row[i].maxX;
+          tileX = tileRng.row[i].maxX + 1;
           dir = -MonsterSpd;
         }
         monster = objNew("img/monster.png", "monster", (tileX + Math.random()) * TileSize, (i + Math.random()) * TileSize);
@@ -124,7 +127,7 @@ function generate() {
           dir = MonsterSpd;
         }
         else {
-          tileY = tileRng.col[i].maxY;
+          tileY = tileRng.col[i].maxY + 1;
           dir = -MonsterSpd;
         }
         monster = objNew("img/monster.png", "monster", (i + Math.random()) * TileSize, (tileY + Math.random()) * TileSize);
@@ -148,8 +151,10 @@ function simulate() {
     player.y += (player.targetY - player.y) / dist * PlayerSpd;
   }
   // don't use for each here because for each always returns index as string, so adding index does concatenation instead
-  for (i = tileRng.minX; i <= tileRng.maxX; i++) {
-    for (j = tileRng.col[i].minY; j <= tileRng.col[i].maxY; j++) {
+  for (i = tileRng.minX - 1; i <= tileRng.maxX + 1; i++) {
+    if (tiles[i] == undefined) continue;
+    for (j = tileRng.minY - 1; j <= tileRng.maxY + 1; j++) {
+      if (tiles[i][j] == undefined) continue;
       // cutters
       for (k = 0; k < tiles[i][j].trees.length; k++) {
         if (tiles[i][j].trees[k].cutter != undefined) {
@@ -181,8 +186,8 @@ function simulate() {
         row = Math.floor(tiles[i][j].monsters[k].y / TileSize);
         // delete monster if off map
         if ((Math.abs(tiles[i][j].monsters[k].velX) > Math.abs(tiles[i][j].monsters[k].velY))
-            ? (col < tileRng.row[j].minX - 1 || col > tileRng.row[j].maxX)
-            : (row < tileRng.col[i].minY - 1 || row > tileRng.col[i].maxY)) {
+            ? (col < tileRng.row[j].minX - 1 || col > tileRng.row[j].maxX + 1)
+            : (row < tileRng.col[i].minY - 1 || row > tileRng.col[i].maxY + 1)) {
           objRemove(tiles[i][j].monsters[k]);
           arrayRemove(tiles[i][j].monsters, k);
           k--;
@@ -202,22 +207,10 @@ function simulate() {
         arrow.y = arrow.startY + (arrow.targetY - arrow.startY) * progress;
         if (progress >= 1) {
           // arrow reached ground, find monster hit
-          var i2, j2, k2;
-          for (i2 = i - 1; i2 <= i + 1; i2++) {
-            if (tiles[i2] == undefined) continue;
-            for (j2 = j - 1; j2 <= j + 1; j2++) {
-              if (tiles[i2][j2] == undefined) continue;
-              for (k2 in tiles[i2][j2].monsters) {
-                if (objDistSq(arrow, tiles[i2][j2].monsters[k2]) <= ArrowSplash * ArrowSplash) {
-                  objRemove(tiles[i2][j2].monsters[k2]);
-                  arrayRemove(tiles[i2][j2].monsters, k2);
-                  k2 = null;
-                  break;
-                }
-              }
-              if (k2 === null) break;
-            }
-            if (k2 === null) break;
+          var monster = objClosest(arrow.targetX, arrow.targetY, ArrowSplash, "monsters");
+          if (monster != undefined) {
+            objRemove(monster.obj);
+            arrayRemove(tiles[monster.col][monster.row].monsters, monster.index);
           }
           // delete arrow
           objRemove(arrow);
@@ -329,29 +322,9 @@ function cutterBuild() {
 // make new cutter on tree near specified point
 // returns whether cutter was created (it isn't created if no nearby tree)
 function cutterNew(x, y) {
-  var tree, distSq;
-  var col = Math.floor(x / TileSize);
-  var row = Math.floor(y / TileSize);
-  var i, j, k;
-  // find closest tree within TileSize pixels of requested position
-  var bestDistSq = TileSize * TileSize;
-  for (i = col - 1; i <= col + 1; i++) {
-    for (j = row - 1; j <= row + 1; j++) {
-      tileGen(i, j);
-      for (k in tiles[i][j].trees) {
-        if (tiles[i][j].trees[k].cutter == undefined) {
-          distSq = objDistSq(tiles[i][j].trees[k], {x: x, y: y});
-          if (distSq < bestDistSq) {
-            tree = tiles[i][j].trees[k];
-            bestDistSq = distSq;
-          }
-        }
-      }
-    }
-  }
-  // if found nearby tree, create a cutter on the tree
+  var tree = objClosest(x, y, CutterJump, "trees", true, function(tree) {return tree.cutter == undefined});
   if (tree == undefined) return false;
-  tree.cutter = objNew("img/cutter.png", "cutter", tree.x, tree.y);
+  tree.obj.cutter = objNew("img/cutter.png", "cutter", tree.obj.x, tree.obj.y);
   return true;
 }
 
@@ -369,38 +342,46 @@ function towerBuild() {
 // shoot arrow originating at specified position and aiming at nearby monster
 // returns whether arrow was shot (it isn't shot if no monster in range)
 function arrowNew(x, y) {
-  var col = Math.floor(x / TileSize);
-  var row = Math.floor(y / TileSize);
-  var distSq, targetX, targetY;
-  var bestDistSq = TowerRange * TowerRange;
+  var monster = objClosest(x, y, TowerRange, "monsters");
+  if (monster == undefined) return false;
+  var arrow = objNew("img/arrow.png", "arrow", x, y);
+  arrow.startTime = time;
+  arrow.startX = x;
+  arrow.startY = y;
+  arrow.targetX = monster.obj.x;
+  arrow.targetY = monster.obj.y;
+  var tile = tiles[monster.col][monster.row];
+  tile.arrows[tile.arrows.length] = arrow;
+  return true;
+}
+
+// returns properties of object closest to given position that is within given distance, of given type, and meeting given conditions
+// type is string, gen says whether to generate search tile if not generated yet, condition is function
+function objClosest(x, y, range, type, gen, condition) {
+  var ret, distSq;
+  //var col = Math.floor(x / TileSize);
+  //var row = Math.floor(y / TileSize);
   var i, j, k;
-  var arrow, tile;
-  // find closest monster in range to aim at
-  for (i = col - 1; i <= col + 1; i++) {
-    if (tiles[i] == undefined) continue;
-    for (j = row - 1; j <= row + 1; j++) {
-      if (tiles[i][j] == undefined) continue;
-      for (k in tiles[i][j].monsters) {
-        distSq = objDistSq(tiles[i][j].monsters[k], {x: x, y: y});
-        if (distSq < bestDistSq) {
-          targetX = tiles[i][j].monsters[k].x;
-          targetY = tiles[i][j].monsters[k].y;
-          bestDistSq = distSq;
+  var bestDistSq = range * range;
+  //for (i = col - Math.ceil(range / TileSize); i <= col + Math.ceil(range / TileSize); i++) {
+  for (i = Math.floor((x - range) / TileSize); i <= Math.floor((x + range) / TileSize); i++) {
+    if (!gen && tiles[i] == undefined) continue;
+    //for (j = row - Math.ceil(range / TileSize); j <= row + Math.ceil(range / TileSize); j++) {
+    for (j = Math.floor((y - range) / TileSize); j <= Math.floor((y + range) / TileSize); j++) {
+      if (!gen && tiles[i][j] == undefined) continue;
+      tileGen(i, j);
+      for (k in tiles[i][j][type]) {
+        if (condition == undefined || condition(tiles[i][j][type][k])) {
+          distSq = objDistSq(tiles[i][j][type][k], {x: x, y: y});
+          if (distSq < bestDistSq) {
+            ret = {obj: tiles[i][j][type][k], col: i, row: j, index: Number(k), distSq: distSq};
+            bestDistSq = distSq;
+          }
         }
       }
     }
   }
-  // if found monster in range, shoot arrow at monster
-  if (targetX == undefined) return false;
-  arrow = objNew("img/arrow.png", "arrow", x, y);
-  arrow.startTime = time;
-  arrow.startX = x;
-  arrow.startY = y;
-  arrow.targetX = targetX;
-  arrow.targetY = targetY;
-  tile = tiles[Math.floor(targetX / TileSize)][Math.floor(targetY / TileSize)];
-  tile.arrows[tile.arrows.length] = arrow;
-  return true;
+  return ret;
 }
 
 // returns random integer in specified range
