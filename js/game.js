@@ -6,13 +6,14 @@ replace temp images
 resource text & background styling
 make new offset monsters when adding new tile
 quadratic arrows: y = x - x^2 has y > 0 for 0 < x < 1 and vertex (0.5, 0.25)
+sound
 */
 
 // constants (all lengths in pixels, all times in milliseconds)
 var UpdateRate = 50;
 var PlayerSpd = 0.1 * UpdateRate; // in pixels per frame
 var MonsterSpd = 0.1 * UpdateRate; // in pixels per frame
-var ArrowSpd = 0.3; // in pixels per millisecond
+var ArrowSpd = 0.5; // in pixels per millisecond
 var TileSize = 500;
 var TileMinTrees = 2;
 var TileMaxTrees = 6;
@@ -24,6 +25,7 @@ var CutterCost = 10;
 var TowerCost = 10;
 var TowerReload = 2000;
 var TowerRange = 500;
+var ArrowSplash = MonsterSpd / ArrowSpd / UpdateRate * TowerRange;
 var NTreeType = 2;
 
 // game state variables
@@ -82,7 +84,7 @@ function update() {
 function generate() {
   var tileX, tileY;
   var nObjs, dir;
-  var i, j, k;
+  var i, j;
   // check if should make new tiles
   for (i = Math.floor(viewX / TileSize); i <= Math.ceil((viewX + getWindowWidth()) / TileSize); i++) {
     for (j = Math.floor(viewY / TileSize); j <= Math.ceil((viewY + getWindowHeight()) / TileSize); j++) {
@@ -145,8 +147,9 @@ function simulate() {
     player.x += (player.targetX - player.x) / dist * PlayerSpd;
     player.y += (player.targetY - player.y) / dist * PlayerSpd;
   }
-  for (i in tiles) {
-    for (j in tiles[i]) {
+  // don't use for each here because for each always returns index as string, so adding index does concatenation instead
+  for (i = tileRng.minX; i <= tileRng.maxX; i++) {
+    for (j = tileRng.col[i].minY; j <= tileRng.col[i].maxY; j++) {
       // cutters
       for (k = 0; k < tiles[i][j].trees.length; k++) {
         if (tiles[i][j].trees[k].cutter != undefined) {
@@ -198,7 +201,25 @@ function simulate() {
         arrow.x = arrow.startX + (arrow.targetX - arrow.startX) * progress;
         arrow.y = arrow.startY + (arrow.targetY - arrow.startY) * progress;
         if (progress >= 1) {
-          // arrow reached ground, TODO: find monster hit
+          // arrow reached ground, find monster hit
+          var i2, j2, k2;
+          for (i2 = i - 1; i2 <= i + 1; i2++) {
+            if (tiles[i2] == undefined) continue;
+            for (j2 = j - 1; j2 <= j + 1; j2++) {
+              if (tiles[i2][j2] == undefined) continue;
+              for (k2 in tiles[i2][j2].monsters) {
+                if (objDistSq(arrow, tiles[i2][j2].monsters[k2]) <= ArrowSplash * ArrowSplash) {
+                  objRemove(tiles[i2][j2].monsters[k2]);
+                  arrayRemove(tiles[i2][j2].monsters, k2);
+                  k2 = null;
+                  break;
+                }
+              }
+              if (k2 === null) break;
+            }
+            if (k2 === null) break;
+          }
+          // delete arrow
           objRemove(arrow);
           arrayRemove(tiles[i][j].arrows, k);
           k--;

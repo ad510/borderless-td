@@ -82,7 +82,7 @@ function arrayMove(array1, index1, array2) {
 // remove array[index] and move later elements forward by 1
 // decrement index and continue (in loop) after calling this
 function arrayRemove(array, index) {
-  for (var i = index; i < array.length - 1; i++) {
+  for (var i = Number(index); i < array.length - 1; i++) {
     array[i] = array[i + 1];
   }
   array.splice(array.length - 1, 1);
