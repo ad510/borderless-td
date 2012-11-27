@@ -7,6 +7,7 @@ resource text & background styling
 make new offset monsters when adding new tile
 quadratic arrows: y = x - x^2 has y > 0 for 0 < x < 1 and vertex (0.5, 0.25)
 sound
+partially randomize tower target using random condition function?
 */
 
 // constants (all lengths in pixels, all times in milliseconds)
@@ -28,6 +29,7 @@ var TowerReload = 2000;
 var TowerRange = 500;
 var ArrowSplash = MonsterSpd / ArrowSpd / UpdateRate * TowerRange;
 var MonsterFollowDist = 500;
+var MonsterRad = 50;
 var NTreeType = 2;
 
 // game state variables
@@ -178,6 +180,30 @@ function simulate() {
       }
       // monsters
       for (k = 0; k < tiles[i][j].monsters.length; k++) {
+        if ((time / UpdateRate) % 5 == Math.abs(i + j + k) % 5) {
+          // go towards closest player-owned object if it is close enough
+          var cutter = objClosest(tiles[i][j].monsters[k].x, tiles[i][j].monsters[k].y, MonsterFollowDist, "trees", false, function(tree) {return tree.cutter != undefined});
+          var tower = objClosest(tiles[i][j].monsters[k].x, tiles[i][j].monsters[k].y, MonsterFollowDist, "towers");
+          var followObj = {obj: player, distSq: objDistSq(player, tiles[i][j].monsters[k])};
+          if (cutter != undefined && cutter.distSq < followObj.distSq) followObj = cutter;
+          if (tower != undefined && tower.distSq < followObj.distSq) followObj = tower;
+          if (followObj.distSq <= MonsterFollowDist * MonsterFollowDist) {
+            if (followObj.distSq > MonsterRad * MonsterRad) {
+              tiles[i][j].monsters[k].velX = (followObj.obj.x - tiles[i][j].monsters[k].x) / Math.sqrt(followObj.distSq) * MonsterSpd;
+              tiles[i][j].monsters[k].velY = (followObj.obj.y - tiles[i][j].monsters[k].y) / Math.sqrt(followObj.distSq) * MonsterSpd;
+            }
+            else {
+              tiles[i][j].monsters[k].velX = 0;
+              tiles[i][j].monsters[k].velY = 0;
+            }
+          }
+          else if (tiles[i][j].monsters[k].velX == 0 && tiles[i][j].monsters[k].velY == 0) {
+            // no target and currently not moving, so move in random direction
+            var theta = Math.random() * 2 * Math.PI;
+            tiles[i][j].monsters[k].velX = MonsterSpd * Math.cos(theta);
+            tiles[i][j].monsters[k].velY = MonsterSpd * Math.sin(theta);
+          }
+        }
         // move monster
         tiles[i][j].monsters[k].x += tiles[i][j].monsters[k].velX;
         tiles[i][j].monsters[k].y += tiles[i][j].monsters[k].velY;
@@ -358,17 +384,13 @@ function arrowNew(x, y) {
 // type is string, gen says whether to generate search tile if not generated yet, condition is function
 function objClosest(x, y, range, type, gen, condition) {
   var ret, distSq;
-  //var col = Math.floor(x / TileSize);
-  //var row = Math.floor(y / TileSize);
   var i, j, k;
   var bestDistSq = range * range;
-  //for (i = col - Math.ceil(range / TileSize); i <= col + Math.ceil(range / TileSize); i++) {
   for (i = Math.floor((x - range) / TileSize); i <= Math.floor((x + range) / TileSize); i++) {
     if (!gen && tiles[i] == undefined) continue;
-    //for (j = row - Math.ceil(range / TileSize); j <= row + Math.ceil(range / TileSize); j++) {
     for (j = Math.floor((y - range) / TileSize); j <= Math.floor((y + range) / TileSize); j++) {
       if (!gen && tiles[i][j] == undefined) continue;
-      tileGen(i, j);
+      if (gen) tileGen(i, j);
       for (k in tiles[i][j][type]) {
         if (condition == undefined || condition(tiles[i][j][type][k])) {
           distSq = objDistSq(tiles[i][j][type][k], {x: x, y: y});
