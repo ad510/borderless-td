@@ -7,7 +7,6 @@ resource text & background styling
 make new offset monsters when adding new tile
 quadratic arrows: y = x - x^2 has y > 0 for 0 < x < 1 and vertex (0.5, 0.25)
 sound
-use divs instead of imgs (got permission from Ami)
 */
 
 // constants (all lengths in pixels, all times in milliseconds)
@@ -54,7 +53,7 @@ function closeInfo() {
 
 // initialize game and start timer (called when page loaded)
 function load() {
-  player = objNew("img/player.png", "player", 0, 0);
+  player = objNew("img/player.png", 0, 0);
   player.targetX = 0;
   player.targetY = 0;
   update();
@@ -71,7 +70,7 @@ function mouseDown(e) {
 function keyDown(e) {
   var key = findKey(e);
   /*if (key == "D") {
-    drops[drops.length] = objNew("img/drop.png", "drop", player.x, player.y);
+    drops[drops.length] = objNew("img/drop.png", player.x, player.y);
   }*/
 }
 
@@ -110,7 +109,7 @@ function generate() {
           tileX = tileRng.row[i].maxX + 1;
           dir = -MonsterSpd;
         }
-        monster = objNew("img/monster.png", "monster", (tileX + Math.random()) * TileSize, (i + Math.random()) * TileSize);
+        monster = objNew("img/monster.png", (tileX + Math.random()) * TileSize, (i + Math.random()) * TileSize);
         monster.velX = dir;
         monster.velY = 0;
         tileInit(tileX, i);
@@ -130,7 +129,7 @@ function generate() {
           tileY = tileRng.col[i].maxY + 1;
           dir = -MonsterSpd;
         }
-        monster = objNew("img/monster.png", "monster", (i + Math.random()) * TileSize, (tileY + Math.random()) * TileSize);
+        monster = objNew("img/monster.png", (i + Math.random()) * TileSize, (tileY + Math.random()) * TileSize);
         monster.velX = 0;
         monster.velY = dir;
         tileInit(i, tileY);
@@ -287,7 +286,7 @@ function tileGen(i, j) {
     // add trees to new tile
     nObjs = randInt(TileMinTrees, TileMaxTrees);
     for (k = 0; k < nObjs; k++) {
-      tiles[i][j].trees[k] = objNew("img/tree" + Math.floor(Math.random() * NTreeType) + ".png", "tree", tileX + Math.random() * TileSize, tileY + Math.random() * TileSize);
+      tiles[i][j].trees[k] = objNew("img/tree" + Math.floor(Math.random() * NTreeType) + ".png", tileX + Math.random() * TileSize, tileY + Math.random() * TileSize);
       tiles[i][j].trees[k].cutTime = 0;
     }
     // update tile range
@@ -324,7 +323,7 @@ function cutterBuild() {
 function cutterNew(x, y) {
   var tree = objClosest(x, y, CutterJump, "trees", true, function(tree) {return tree.cutter == undefined});
   if (tree == undefined) return false;
-  tree.obj.cutter = objNew("img/cutter.png", "cutter", tree.obj.x, tree.obj.y);
+  tree.obj.cutter = objNew("img/cutter.png", tree.obj.x, tree.obj.y);
   return true;
 }
 
@@ -332,7 +331,7 @@ function cutterNew(x, y) {
 function towerBuild() {
   if (wood >= TowerCost) {
     var tile = tiles[Math.floor(player.x / TileSize)][Math.floor(player.y / TileSize)];
-    var tower = objNew("img/tower.png", "tower", player.x, player.y);
+    var tower = objNew("img/tower.png", player.x, player.y);
     tower.time = time;
     tile.towers[tile.towers.length] = tower;
     wood -= TowerCost;
@@ -344,7 +343,7 @@ function towerBuild() {
 function arrowNew(x, y) {
   var monster = objClosest(x, y, TowerRange, "monsters");
   if (monster == undefined) return false;
-  var arrow = objNew("img/arrow.png", "arrow", x, y);
+  var arrow = objNew("img/arrow.png", x, y);
   arrow.startTime = time;
   arrow.startX = x;
   arrow.startY = y;

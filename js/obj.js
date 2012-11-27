@@ -1,66 +1,40 @@
 "use strict";
 
-// try to use div instead:
-/*
-function objNew(x, y, imgPath, imgAlt) {
-  var ret = {};
-  var tempImg = document.createElement("img");
-  tempImg.src = imgPath;
-  tempImg.onLoad = function() {
-    // set width & height here
-  }
-  ret.x = x;
-  ret.y = y;
-  ret.width = tempImg.width;
-  ret.height = tempImg.height;
-  alert(ret.width + " " + ret.height);
-  ret.div = document.createElement("div"); // use div tag instead of img so image is not selectable
-  ret.div.style.backgroundImage = "url('" + imgPath + "')";
-  ret.div.style.position = "fixed";
-  if (ret.width > 0 && ret.height > 0) {
-    ret.div.style.width = ret.width + "px"; // get width & height from temporary image object
-    ret.div.style.height = ret.height + "px";
-  }
-  else {
-    ret.div.appendChild(document.createTextNode(imgAlt)); // set alternate text if image not loaded
-  }
-  document.getElementById("draw").appendChild(ret.div);
-  return ret;
-}
-*/
-
 // returns new object with specified properties
-function objNew(imgPath, imgAlt, x, y) {
+function objNew(imgPath, x, y) {
   var ret = {};
   ret.x = x;
   ret.y = y;
-  ret.img = document.createElement("img");
-  ret.img.src = imgPath;
-  ret.img.alt = imgAlt;
-  ret.img.style.position = "fixed";
-  ret.img.style.display = "none";
-  getDrawDiv().appendChild(ret.img);
+  ret.imgPath = imgPath;
+  // use div tag instead of img tag so image is not selectable
+  // side effect is can no longer set alt attribute, but Ami recommends doing this anyway
+  ret.div = document.createElement("div");
+  ret.div.style.backgroundImage = "url('" + imgPath + "')";
+  ret.div.style.width = imgProp[imgPath].width + "px";
+  ret.div.style.height = imgProp[imgPath].height + "px";
+  ret.div.style.position = "fixed";
+  ret.div.style.display = "none";
+  getDrawDiv().appendChild(ret.div);
   return ret;
 }
 
 // draw specified object
 function objDraw(obj) {
-  var imgPath = obj.img.src.substring(obj.img.src.lastIndexOf("/") + 1);
-  if (obj.x - imgProp[imgPath].baseX + obj.img.width > viewX && obj.x - imgProp[imgPath].baseX < viewX + getWindowWidth()
-      && obj.y - imgProp[imgPath].baseY + obj.img.height > viewY && obj.y - imgProp[imgPath].baseY < viewY + getWindowHeight()) {
-    obj.img.style.left = (obj.x - imgProp[imgPath].baseX - viewX) + "px";
-    obj.img.style.top = (obj.y - imgProp[imgPath].baseY - viewY) + "px";
-    obj.img.style.zIndex = Math.floor(obj.y);
-    obj.img.style.display = "";
+  if (obj.x - imgProp[obj.imgPath].baseX + imgProp[obj.imgPath].width > viewX && obj.x - imgProp[obj.imgPath].baseX < viewX + getWindowWidth()
+      && obj.y - imgProp[obj.imgPath].baseY + imgProp[obj.imgPath].height > viewY && obj.y - imgProp[obj.imgPath].baseY < viewY + getWindowHeight()) {
+    obj.div.style.left = (obj.x - imgProp[obj.imgPath].baseX - viewX) + "px";
+    obj.div.style.top = (obj.y - imgProp[obj.imgPath].baseY - viewY) + "px";
+    obj.div.style.zIndex = Math.floor(obj.y);
+    obj.div.style.display = "";
   }
   else {
-    obj.img.style.display = "none";
+    obj.div.style.display = "none";
   }
 }
 
 // stop drawing specified object
 function objRemove(obj) {
-  getDrawDiv().removeChild(obj.img);
+  getDrawDiv().removeChild(obj.div);
 }
 
 // returns distance between 2 objects

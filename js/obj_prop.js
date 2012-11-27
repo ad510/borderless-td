@@ -2,38 +2,52 @@
 
 var imgProp =
 {
-  "player.png":
+  "img/player.png":
   {
+    "width": 30,
+    "height": 38,
     "baseX": 15,
     "baseY": 38
   },
-  "tree0.png":
+  "img/tree0.png":
   {
+    "width": 193,
+    "height": 173,
     "baseX": 96,
     "baseY": 173
   },
-  "tree1.png":
+  "img/tree1.png":
   {
+    "width": 172,
+    "height": 120,
     "baseX": 80,
     "baseY": 85
   },
-  "cutter.png":
+  "img/cutter.png":
   {
+    "width": 40,
+    "height": 40,
     "baseX": 20,
     "baseY": 20
   },
-  "tower.png":
+  "img/tower.png":
   {
+    "width": 40,
+    "height": 40,
     "baseX": 20,
     "baseY": 20
   },
-  "arrow.png":
+  "img/arrow.png":
   {
+    "width": 4,
+    "height": 4,
     "baseX": 2,
     "baseY": 2
   },
-  "monster.png":
+  "img/monster.png":
   {
+    "width": 40,
+    "height": 40,
     "baseX": 20,
     "baseY": 20
   }
