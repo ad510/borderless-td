@@ -12,9 +12,12 @@ partially randomize tower target using random condition function?
 
 // constants (all lengths in pixels, all times in milliseconds)
 var UpdateRate = 50;
-var PlayerSpd = 0.1 * UpdateRate; // in pixels per frame
+var PlayerSpd = 0.09 * UpdateRate; // in pixels per frame
 var MonsterSpd = 0.1 * UpdateRate; // in pixels per frame
 var ArrowSpd = 0.5; // in pixels per millisecond
+var PlayerMaxHealth = 20000;
+var CutterMaxHealth = 20000;
+var TowerMaxHealth = 20000;
 var TileSize = 500;
 var TileMinTrees = 2;
 var TileMaxTrees = 6;
@@ -28,6 +31,7 @@ var TowerCost = 10;
 var TowerReload = 2000;
 var TowerRange = 500;
 var ArrowSplash = MonsterSpd / ArrowSpd / UpdateRate * TowerRange;
+var MonsterFollowRate = 5; // in frames (must be integer # of frames)
 var MonsterFollowDist = 500;
 var MonsterRad = 50;
 var NTreeType = 2;
@@ -37,7 +41,7 @@ var mouseX, mouseY;
 var viewX, viewY;
 var time = 0;
 var timeMonster = 0;
-var wood = 10;
+var wood = 20;
 var tileRng = {
   minX: 100, maxX: -100, minY: 100, maxY: -100,
   row: [], col: []
@@ -56,6 +60,7 @@ function closeInfo() {
 // initialize game and start timer (called when page loaded)
 function load() {
   player = objNew("img/player.png", 0, 0);
+  player.health = PlayerMaxHealth;
   player.targetX = 0;
   player.targetY = 0;
   update();
@@ -180,21 +185,64 @@ function simulate() {
       }
       // monsters
       for (k = 0; k < tiles[i][j].monsters.length; k++) {
-        if ((time / UpdateRate) % 5 == Math.abs(i + j + k) % 5) {
+        if ((time / UpdateRate) % MonsterFollowRate == Math.abs(i + j + k) % MonsterFollowRate) {
           // go towards closest player-owned object if it is close enough
           var cutter = objClosest(tiles[i][j].monsters[k].x, tiles[i][j].monsters[k].y, MonsterFollowDist, "trees", false, function(tree) {return tree.cutter != undefined});
           var tower = objClosest(tiles[i][j].monsters[k].x, tiles[i][j].monsters[k].y, MonsterFollowDist, "towers");
-          var followObj = {obj: player, distSq: objDistSq(player, tiles[i][j].monsters[k])};
-          if (cutter != undefined && cutter.distSq < followObj.distSq) followObj = cutter;
-          if (tower != undefined && tower.distSq < followObj.distSq) followObj = tower;
+          var followObj = {obj: player, distSq: objDistSq(player, tiles[i][j].monsters[k]), type: "p"};
+          if (cutter != undefined && cutter.distSq < followObj.distSq) {
+            followObj = cutter;
+            followObj.type = "c";
+          }
+          if (tower != undefined && tower.distSq < followObj.distSq) {
+            followObj = tower;
+            followObj.type = "t";
+          }
           if (followObj.distSq <= MonsterFollowDist * MonsterFollowDist) {
             if (followObj.distSq > MonsterRad * MonsterRad) {
               tiles[i][j].monsters[k].velX = (followObj.obj.x - tiles[i][j].monsters[k].x) / Math.sqrt(followObj.distSq) * MonsterSpd;
               tiles[i][j].monsters[k].velY = (followObj.obj.y - tiles[i][j].monsters[k].y) / Math.sqrt(followObj.distSq) * MonsterSpd;
             }
             else {
+              // arrived at object, so attack it
               tiles[i][j].monsters[k].velX = 0;
               tiles[i][j].monsters[k].velY = 0;
+              followObj.obj.health -= UpdateRate * MonsterFollowRate;
+              if (followObj.obj.health <= 0) {
+                // object lost all health, so remove object
+                if (followObj.type == "c") {
+                  objRemove(followObj.obj.cutter);
+                  followObj.obj.cutter = undefined;
+                }
+                else if (followObj.type == "t") {
+                  objRemove(followObj.obj);
+                  arrayRemove(tiles[followObj.col][followObj.row].towers, followObj.index);
+                }
+                else if (followObj.type == "p") {
+                  // turn closest wood cutter or arrow tower into the player
+                  var cutter2 = objClosest(player.x, player.y, 10000 * TileSize, "trees", false, function(tree) {return tree.cutter != undefined});
+                  var tower2 = objClosest(player.x, player.y, 10000 * TileSize, "towers");
+                  if (cutter2 != undefined && cutter2.distSq < tower2.distSq) {
+                    player.x = cutter2.obj.x;
+                    player.y = cutter2.obj.y;
+                    objRemove(cutter2.obj.cutter);
+                    cutter2.obj.cutter = undefined;
+                  }
+                  else if (tower2 != undefined) {
+                    player.x = tower2.obj.x;
+                    player.y = tower2.obj.y;
+                    objRemove(tower2.obj);
+                    arrayRemove(tiles[tower2.col][tower2.row].towers, tower2.index);
+                  }
+                  else {
+                    alert("Game over. You survived for " + Math.floor(time / 1000) + " seconds.");
+                    window.location.reload(false);
+                  }
+                  player.health = PlayerMaxHealth;
+                  player.targetX = player.x;
+                  player.targetY = player.y;
+                }
+              }
             }
           }
           else if (tiles[i][j].monsters[k].velX == 0 && tiles[i][j].monsters[k].velY == 0) {
@@ -211,8 +259,8 @@ function simulate() {
         row = Math.floor(tiles[i][j].monsters[k].y / TileSize);
         // delete monster if off map
         if ((Math.abs(tiles[i][j].monsters[k].velX) > Math.abs(tiles[i][j].monsters[k].velY))
-            ? (col < tileRng.row[j].minX - 1 || col > tileRng.row[j].maxX + 1)
-            : (row < tileRng.col[i].minY - 1 || row > tileRng.col[i].maxY + 1)) {
+            ? (tileRng.row[j] == undefined || col < tileRng.row[j].minX - 1 || col > tileRng.row[j].maxX + 1)
+            : (tileRng.col[i] == undefined || row < tileRng.col[i].minY - 1 || row > tileRng.col[i].maxY + 1)) {
           objRemove(tiles[i][j].monsters[k]);
           arrayRemove(tiles[i][j].monsters, k);
           k--;
@@ -350,6 +398,7 @@ function cutterNew(x, y) {
   var tree = objClosest(x, y, CutterJump, "trees", true, function(tree) {return tree.cutter == undefined});
   if (tree == undefined) return false;
   tree.obj.cutter = objNew("img/cutter.png", tree.obj.x, tree.obj.y);
+  tree.obj.health = CutterMaxHealth; // refers to cutter health, not tree health (tree health stored in cutTime)
   return true;
 }
 
@@ -358,6 +407,7 @@ function towerBuild() {
   if (wood >= TowerCost) {
     var tile = tiles[Math.floor(player.x / TileSize)][Math.floor(player.y / TileSize)];
     var tower = objNew("img/tower.png", player.x, player.y);
+    tower.health = TowerMaxHealth;
     tower.time = time;
     tile.towers[tile.towers.length] = tower;
     wood -= TowerCost;
