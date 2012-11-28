@@ -44,11 +44,18 @@ var imgProp =
     "baseX": 2,
     "baseY": 2
   },
-  "img/monster.png":
+  "img/monster_l.png":
   {
-    "width": 40,
-    "height": 40,
-    "baseX": 20,
-    "baseY": 20
+    "width": 121,
+    "height": 76,
+    "baseX": 60,
+    "baseY": 74
+  },
+  "img/monster_r.png":
+  {
+    "width": 121,
+    "height": 76,
+    "baseX": 60,
+    "baseY": 74
   }
 };

@@ -5,17 +5,24 @@ function objNew(imgPath, x, y) {
   var ret = {};
   ret.x = x;
   ret.y = y;
-  ret.imgPath = imgPath;
-  // use div tag instead of img tag so image is not selectable
-  // side effect is can no longer set alt attribute, but Ami recommends doing this anyway
   ret.div = document.createElement("div");
-  ret.div.style.backgroundImage = "url('" + imgPath + "')";
-  ret.div.style.width = imgProp[imgPath].width + "px";
-  ret.div.style.height = imgProp[imgPath].height + "px";
   ret.div.style.position = "fixed";
   ret.div.style.display = "none";
+  objSetImage(ret, imgPath);
   getDrawDiv().appendChild(ret.div);
   return ret;
+}
+
+// set background image of object's div tag
+// use div tag instead of img tag so image is not selectable
+// side effect is can no longer set alt attribute, but Ami recommends doing this anyway
+function objSetImage(obj, imgPath) {
+  if (imgPath != obj.imgPath) {
+    obj.imgPath = imgPath;
+    obj.div.style.backgroundImage = "url('" + imgPath + "')";
+    obj.div.style.width = imgProp[imgPath].width + "px";
+    obj.div.style.height = imgProp[imgPath].height + "px";
+  }
 }
 
 // draw specified object

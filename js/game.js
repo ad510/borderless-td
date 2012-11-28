@@ -116,7 +116,7 @@ function generate() {
           tileX = tileRng.row[i].maxX + 1;
           dir = -MonsterSpd;
         }
-        monster = objNew("img/monster.png", (tileX + Math.random()) * TileSize, (i + Math.random()) * TileSize);
+        monster = objNew((dir > 0) ? "img/monster_r.png" : "img/monster_l.png", (tileX + Math.random()) * TileSize, (i + Math.random()) * TileSize);
         monster.velX = dir;
         monster.velY = 0;
         tileInit(tileX, i);
@@ -136,7 +136,7 @@ function generate() {
           tileY = tileRng.col[i].maxY + 1;
           dir = -MonsterSpd;
         }
-        monster = objNew("img/monster.png", (i + Math.random()) * TileSize, (tileY + Math.random()) * TileSize);
+        monster = objNew((Math.random() < 0.5) ? "img/monster_r.png" : "img/monster_l.png", (i + Math.random()) * TileSize, (tileY + Math.random()) * TileSize);
         monster.velX = 0;
         monster.velY = dir;
         tileInit(i, tileY);
@@ -202,6 +202,7 @@ function simulate() {
             if (followObj.distSq > MonsterRad * MonsterRad) {
               tiles[i][j].monsters[k].velX = (followObj.obj.x - tiles[i][j].monsters[k].x) / Math.sqrt(followObj.distSq) * MonsterSpd;
               tiles[i][j].monsters[k].velY = (followObj.obj.y - tiles[i][j].monsters[k].y) / Math.sqrt(followObj.distSq) * MonsterSpd;
+              objSetImage(tiles[i][j].monsters[k], (tiles[i][j].monsters[k].velX > 0) ? "img/monster_r.png" : "img/monster_l.png");
             }
             else {
               // arrived at object, so attack it
@@ -250,6 +251,7 @@ function simulate() {
             var theta = Math.random() * 2 * Math.PI;
             tiles[i][j].monsters[k].velX = MonsterSpd * Math.cos(theta);
             tiles[i][j].monsters[k].velY = MonsterSpd * Math.sin(theta);
+            objSetImage(tiles[i][j].monsters[k], (tiles[i][j].monsters[k].velX > 0) ? "img/monster_r.png" : "img/monster_l.png");
           }
         }
         // move monster
@@ -428,7 +430,7 @@ function arrowNew(x, y) {
   var tile = tiles[monster.col][monster.row];
   tile.arrows[tile.arrows.length] = arrow;
   return true;
-}
+}(dir > 0) ? "img/monster_r.png" : "img/monster_l.png"
 
 // returns properties of object closest to given position that is within given distance, of given type, and meeting given conditions
 // type is string, gen says whether to generate search tile if not generated yet, condition is function
