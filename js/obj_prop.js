@@ -32,10 +32,10 @@ var imgProp =
   },
   "img/tower.png":
   {
-    "width": 40,
-    "height": 40,
-    "baseX": 20,
-    "baseY": 20
+    "width": 67,
+    "height": 96,
+    "baseX": 33,
+    "baseY": 96
   },
   "img/arrow.png":
   {
