@@ -46,16 +46,16 @@ var imgProp =
   },
   "img/monster_l.png":
   {
-    "width": 121,
-    "height": 76,
-    "baseX": 60,
-    "baseY": 74
+    "width": 91,
+    "height": 57,
+    "baseX": 45,
+    "baseY": 56
   },
   "img/monster_r.png":
   {
-    "width": 121,
-    "height": 76,
-    "baseX": 60,
-    "baseY": 74
+    "width": 91,
+    "height": 57,
+    "baseX": 45,
+    "baseY": 56
   }
 };
