@@ -8,6 +8,7 @@ make new offset monsters when adding new tile
 quadratic arrows: y = x - x^2 has y > 0 for 0 < x < 1 and vertex (0.5, 0.25)
 sound
 partially randomize tower target using random condition function?
+only allow wood cutters to turn into player?
 */
 
 // constants (all lengths in pixels, all times in milliseconds)
@@ -223,7 +224,7 @@ function simulate() {
                   // turn closest wood cutter or arrow tower into the player
                   var cutter2 = objClosest(player.x, player.y, 10000 * TileSize, "trees", false, function(tree) {return tree.cutter != undefined});
                   var tower2 = objClosest(player.x, player.y, 10000 * TileSize, "towers");
-                  if (cutter2 != undefined && cutter2.distSq < tower2.distSq) {
+                  if (cutter2 != undefined && (tower2 == undefined || cutter2.distSq < tower2.distSq)) {
                     player.x = cutter2.obj.x;
                     player.y = cutter2.obj.y;
                     objRemove(cutter2.obj.cutter);
