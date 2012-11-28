@@ -33,7 +33,7 @@ var TowerRange = 500;
 var ArrowSplash = MonsterSpd / ArrowSpd / UpdateRate * TowerRange;
 var MonsterFollowRate = 5; // in frames (must be integer # of frames)
 var MonsterFollowDist = 500;
-var MonsterRad = 50;
+var MonsterRad = 70;
 var NTreeType = 2;
 
 // game state variables
