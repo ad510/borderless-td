@@ -57,12 +57,6 @@ var tileRng = {
 var player;
 var tiles = [];
 
-// close information box
-function closeInfo() {
-  var infoTag = document.getElementById("info");
-  infoTag.parentNode.removeChild(infoTag);
-}
-
 // initialize game and start timer (called when page loaded)
 function load() {
   player = objNew("img/player.png", 0, 0);
@@ -80,6 +74,7 @@ function mouseDown(e) {
   player.targetY = mouseY + viewY;
 }
 
+// currently unused, but keeping it here in case I decide to add to it later
 function keyDown(e) {
   var key = findKey(e);
   /*if (key == "D") {
@@ -465,6 +460,19 @@ function objClosest(x, y, range, type, gen, condition) {
     }
   }
   return ret;
+}
+
+// checks high score form input
+function checkForm() {
+  if (document.getElementById("f_name").value == "") {
+    document.getElementById("form_err").firstChild.nodeValue = "Please enter your name";
+    return false;
+  }
+  else if (!document.getElementById("f_name").value.match(/^[a-zA-Z ]+$/)) {
+    document.getElementById("form_err").firstChild.nodeValue = "Name may only contain letters or spaces";
+    return false;
+  }
+  return true;
 }
 
 // returns random integer in specified range
