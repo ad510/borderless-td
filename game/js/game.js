@@ -145,7 +145,6 @@ function generate() {
     }
     // make game gradually harder
     TileMaxMonsters *= 1.001;
-    document.title = TileMaxMonsters;
   }
 }
 
