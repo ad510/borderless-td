@@ -429,7 +429,7 @@ function arrowNew(x, y) {
   var tile = tiles[monster.col][monster.row];
   tile.arrows[tile.arrows.length] = arrow;
   return true;
-}(dir > 0) ? "img/monster_r.png" : "img/monster_l.png"
+}
 
 // returns properties of object closest to given position that is within given distance, of given type, and meeting given conditions
 // type is string, gen says whether to generate search tile if not generated yet, condition is function
