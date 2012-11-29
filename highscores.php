@@ -8,6 +8,9 @@
   <body>
     <div class="back">
       <div class="title">High Scores</div>
+      <div class="content"><?php
+
+      ?></div>
       <a href="index.htm"><div class="button" style="background-image: url('img/button0.png')">Main Menu</div></a>
     </div>
   </body>

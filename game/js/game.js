@@ -45,6 +45,7 @@ var NTreeType = 2;
 var mouseX, mouseY;
 var viewX, viewY;
 var time = 0;
+var pause = false;
 var timeMonster = 0;
 var wood = 20;
 var tileRng = {
@@ -88,9 +89,11 @@ function keyDown(e) {
 
 // update game at fixed time intervals
 function update() {
-  time += UpdateRate;
-  generate();
-  simulate();
+  if (!pause) {
+    time += UpdateRate;
+    generate();
+    simulate();
+  }
   draw();
 }
 
@@ -241,8 +244,10 @@ function simulate() {
                     arrayRemove(tiles[tower2.col][tower2.row].towers, tower2.index);
                   }
                   else {
-                    alert("Game over. You survived for " + Math.floor(time / 1000) + " seconds.");
-                    window.location.reload(false);
+                    pause = true;
+                    document.getElementById("score").firstChild.nodeValue = Math.floor(time / 1000);
+                    document.getElementById("f_score").value = Math.floor(time / 1000);
+                    document.getElementById("highscore").style.display = "";
                   }
                   player.health = PlayerMaxHealth;
                   player.targetX = player.x;
@@ -394,7 +399,7 @@ function tileGen(i, j) {
 
 // build cutter near player, if player has enough wood
 function cutterBuild() {
-  if (wood >= CutterCost && cutterNew(player.x, player.y)) {
+  if (!pause && wood >= CutterCost && cutterNew(player.x, player.y)) {
     wood -= CutterCost;
   }
 }
@@ -411,7 +416,7 @@ function cutterNew(x, y) {
 
 // build tower at player position, if player has enough wood
 function towerBuild() {
-  if (wood >= TowerCost) {
+  if (!pause && wood >= TowerCost) {
     var tile = tiles[Math.floor(player.x / TileSize)][Math.floor(player.y / TileSize)];
     var tower = objNew("img/tower.png", player.x, player.y);
     tower.health = TowerMaxHealth;

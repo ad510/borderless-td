@@ -8,6 +8,8 @@ body {
   margin: 0px;
   padding: 0px;
   background-image: url("img/ground.jpg");
+  font-family: "Georgia", "serif";
+  font-size: 20px;
 }
     </style>
     <script type="text/javascript" src="js/common.js">
@@ -20,15 +22,19 @@ body {
     </script>
   </head>
   <body onload="load()" onKeyDown="keyDown(event)">
-    <!--<div id="info" style="position: fixed; margin: 10%; padding: 20px; background-color: yellow; z-index: 10000">
-     <p>One of the major reasons I chose to make this game over other games is that I have been fascinated with infinitely large randomly generated worlds, yet I have never written code to generate one myself. Therefore, while this demo page does not implement a complete game, it is a proof of concept that shows I can generate an infinitely large forest. Click on the ground to move, and click the yellow thing in the corner to build a wood cutter. Then explore the forest that never ends!</p>
-     <p>I recommend playing this in Google Chrome because it seems to lag in Firefox if you play it for too long.</p>
-     <p><input type="button" value="Close" onclick="closeInfo()"/></p>
-    </div>-->
     <div id="draw" onMouseDown="mouseDown(event)"></div>
     <div style="position: fixed; left: 0px; bottom: 0px; z-index: 100000">
       Wood: <span id="wood"> </span><br/>
       <img src="img/cutter.png" alt="build wood cutter" onclick="cutterBuild()"/><img src="img/tower.png" alt="build arrow tower" onclick="towerBuild()"/>
+    </div>
+    <div id="highscore" style="display: none; position:absolute; top: 0px; right: 0px; padding-top: 200px; width: 490px; height: 432px; background-image: url('../img/scroll.png'); text-align: center; z-index: 100001">
+      <form action="submithighscore.php" method="post">
+        <b>Game Over</b><br/>
+        You survived for <span id="score"> </span> seconds.<br/><br/>
+        <input type="text" id="f_score" name="f_score" style="display: none"/>
+        Name: <input type="text" name="f_name"/><br/>
+        <input type="submit" value="Submit High Score"/> <input type="button" value="Cancel" onclick="window.location = '../index.htm'"/>
+      </form>
     </div>
     <noscript><p style="font-size: 2em">You must enable JavaScript to be able to play Borderless TD.</p></noscript>
   </body>
