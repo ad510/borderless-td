@@ -7,10 +7,7 @@ resource text & background styling
 make new offset monsters when adding new tile
 quadratic arrows: y = x - x^2 has y > 0 for 0 < x < 1 and vertex (0.5, 0.25)
 sound
-game balance (e.g. increase spawn rate over time)
 menu (update instructions)
-only allow wood cutters to turn into player?
-img title tags
 pay attention to navigation & color balance
 check project requirements
 */
@@ -21,13 +18,13 @@ var PlayerSpd = 0.09 * UpdateRate; // in pixels per frame
 var MonsterSpd = 0.1 * UpdateRate; // in pixels per frame
 var ArrowSpd = 0.5; // in pixels per millisecond
 var PlayerMaxHealth = 20000;
-var CutterMaxHealth = 20000;
-var TowerMaxHealth = 20000;
+var CutterMaxHealth = 10000;
+var TowerMaxHealth = 10000;
 var TileSize = 500;
 var TileMinTrees = 2;
 var TileMaxTrees = 6;
 var TileMinMonsters = 0;
-var TileMaxMonsters = 1.1;
+var TileMaxMonsters = 1.05;
 var TreeCutTime = 10000;
 var TreeWoodRate = 0.001 * UpdateRate;
 var CutterCost = 10;
@@ -146,6 +143,9 @@ function generate() {
         tiles[i][tileY].monsters[tiles[i][tileY].monsters.length] = monster;
       }
     }
+    // make game gradually harder
+    TileMaxMonsters *= 1.001;
+    document.title = TileMaxMonsters;
   }
 }
 
@@ -223,20 +223,13 @@ function simulate() {
                   arrayRemove(tiles[followObj.col][followObj.row].towers, followObj.index);
                 }
                 else if (followObj.type == "p") {
-                  // turn closest wood cutter or arrow tower into the player
+                  // turn closest wood cutter into the player
                   var cutter2 = objClosest(player.x, player.y, 10000 * TileSize, "trees", false, function(tree) {return tree.cutter != undefined});
-                  var tower2 = objClosest(player.x, player.y, 10000 * TileSize, "towers");
-                  if (cutter2 != undefined && (tower2 == undefined || cutter2.distSq < tower2.distSq)) {
+                  if (cutter2 != undefined) {
                     player.x = cutter2.obj.x;
                     player.y = cutter2.obj.y;
                     objRemove(cutter2.obj.cutter);
                     cutter2.obj.cutter = undefined;
-                  }
-                  else if (tower2 != undefined) {
-                    player.x = tower2.obj.x;
-                    player.y = tower2.obj.y;
-                    objRemove(tower2.obj);
-                    arrayRemove(tiles[tower2.col][tower2.row].towers, tower2.index);
                   }
                   else {
                     pause = true;

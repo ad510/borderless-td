@@ -25,7 +25,7 @@ body {
     <div id="draw" onMouseDown="mouseDown(event)"></div>
     <div style="position: fixed; left: 0px; bottom: 0px; z-index: 100000">
       Wood: <span id="wood"> </span><br/>
-      <img src="img/cutter.png" alt="build wood cutter" onclick="cutterBuild()"/><img src="img/tower.png" alt="build arrow tower" onclick="towerBuild()"/>
+      <img src="img/cutter.png" alt="Build wood cutter" title="Build wood cutter (costs 10 wood)" onclick="cutterBuild()"/><img src="img/tower.png" alt="Build tower" title="Build tower (costs 10 wood)" onclick="towerBuild()"/>
     </div>
     <div id="highscore" style="display: none; position:absolute; top: 0px; right: 0px; padding: 200px 80px 0px 80px; width: 330px; height: 432px; background-image: url('../img/scroll.png'); text-align: center; z-index: 100001">
       <form action="submithighscore.php" method="post" onsubmit="return checkForm()">
