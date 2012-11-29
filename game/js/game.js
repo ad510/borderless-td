@@ -8,8 +8,7 @@ make new offset monsters when adding new tile
 quadratic arrows: y = x - x^2 has y > 0 for 0 < x < 1 and vertex (0.5, 0.25)
 sound
 game balance (e.g. increase spawn rate over time)
-menu (parchment background, update instructions, submit score, view high scores)
-credit Matthew for button and parchment imgs
+menu (update instructions, submit score, view high scores)
 only allow wood cutters to turn into player?
 img title tags
 pay attention to navigation & color balance

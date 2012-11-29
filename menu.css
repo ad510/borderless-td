@@ -13,22 +13,29 @@ a {
 }
 div.back {
   margin: 50px auto;
-  padding-top: 50px;
-  width: 500px;
-  height: 500px;
-  background-image: url('game/img/ground.jpg');
+  padding: 0px;
+  width: 490px;
+  height: 632px;
+  background-image: url('img/scroll.png');
+}
+div.title {
+  margin: 0px;
+  padding: 100px 0px 0px 0px;
+  text-align: center;
+  font-size: 32px;
 }
 div.button {
   margin: 30px auto; /* horizontally center all buttons in the parent tag */
   padding: 0px;
   width: 199px;
   height: 42px;
+  background-repeat: no-repeat;
   text-align: center; /* center align all text in the buttons */
   font-size: 22px;
   line-height: 40px; /* draw text at correct height inside button */
 }
 div.content {
-  margin: 50px;
+  margin: 30px 80px;
   padding: 0px;
   text-align: center;
   font-size: 16px;
