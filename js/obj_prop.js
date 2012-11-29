@@ -25,10 +25,10 @@ var imgProp =
   },
   "img/cutter.png":
   {
-    "width": 40,
-    "height": 40,
-    "baseX": 20,
-    "baseY": 20
+    "width": 70,
+    "height": 70,
+    "baseX": 35,
+    "baseY": 60
   },
   "img/tower.png":
   {
