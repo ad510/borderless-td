@@ -44,10 +44,10 @@ var imgProp =
   },
   "img/arrow.png":
   {
-    "width": 4,
-    "height": 4,
-    "baseX": 2,
-    "baseY": 2
+    "width": 28,
+    "height": 20,
+    "baseX": 14,
+    "baseY": 10
   },
   "img/monster_l.png":
   {
