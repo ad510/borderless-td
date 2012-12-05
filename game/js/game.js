@@ -8,7 +8,7 @@
 /*
 todo:
 change projectile and player images
-resource text & background styling
+resource text & background styling (main menu button in game)
 make new offset monsters when adding new tile
 quadratic arrows: y = x - x^2 has y > 0 for 0 < x < 1 and vertex (0.5, 0.25)
 sound
@@ -16,7 +16,6 @@ tell user when not enough wood to build?
 server-side input validation
 pay attention to navigation & color balance
 check project requirements
-MIT license?
 */
 
 // constants (all lengths in pixels, all times in milliseconds)
