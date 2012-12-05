@@ -18,10 +18,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <div class="back">
       <div class="title">High Scores</div>
       <div class="content">
-        <table>
+        <!-- setting table column widths described at http://stackoverflow.com/questions/446624/table-cell-widths-fixing-width-wrapping-truncating-long-words -->
+        <table style="width: 330px; table-layout: fixed">
           <tr>
-            <th>Name</th>
-            <th>Seconds Lasted</th>
+            <th style="width: 250px">Name</th>
+            <th style="width: 80px">Seconds Lasted</th>
           </tr>
         <?php
 $con = new mysqli("localhost", "root", "5xvhK5zBC1", "borderless_td");
@@ -32,7 +33,7 @@ else {
   $res = $con->query("select * from High_scores order by score desc");
   $res->data_seek(0);
   for ($i = 0; $i < 5 && $row = $res->fetch_assoc(); $i++) {
-    echo("<tr><td>" . $row["name"] . "</td><td>" . $row["score"] . "</td></tr>");
+    echo("<tr><td style=\"width: 250px\">" . $row["name"] . "</td><td style=\"width: 80px\">" . $row["score"] . "</td></tr>");
   }
   echo("</table>");
 }
