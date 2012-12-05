@@ -17,6 +17,7 @@ body {
   margin: 0px;
   padding: 0px;
   background-image: url("img/ground.jpg");
+  color: black;
   font-family: "Georgia", "serif";
   font-size: 20px;
 }
@@ -31,12 +32,17 @@ body {
     </script>
   </head>
   <body onload="load()" onKeyDown="keyDown(event)">
+    <!-- div in which object divs are inserted -->
     <div id="draw" onMouseDown="mouseDown(event)"></div>
-    <div style="position: fixed; left: 0px; bottom: 0px; z-index: 100000">
+    <!-- resources and build panel -->
+    <div style="position: fixed; left: 0px; bottom: 0px; border: 4px solid black; padding: 5px; background-color: rgb(200, 160, 90); z-index: 100000">
       Wood: <span id="wood"> </span><br/>
-      <img src="img/cutter.png" alt="Build wood cutter" title="Build wood cutter (costs 10 wood)" onclick="cutterBuild()"/><img src="img/tower.png" alt="Build tower" title="Build tower (costs 10 wood)" onclick="towerBuild()"/>
+      <img src="img/cutter_b.png" alt="Build wood cutter" title="Build wood cutter (costs 10 wood)" onclick="cutterBuild()" onmouseover="this.src = 'img/cutter_bsel.png'" onmouseout="this.src = 'img/cutter_b.png'"/><img src="img/tower_b.png" alt="Build tower" title="Build tower (costs 10 wood)" onclick="towerBuild()" onmouseover="this.src = 'img/tower_bsel.png'" onmouseout="this.src = 'img/tower_b.png'"/>
     </div>
-    <div id="highscore" style="display: none; position:absolute; top: 0px; right: 0px; padding: 200px 80px 0px 80px; width: 330px; height: 432px; background-image: url('../img/scroll.png'); text-align: center; z-index: 100001">
+    <!-- main menu button -->
+    <div id="mainmenu" style="position: fixed; right: 0px; bottom: 0px; padding: 0px; width: 199px; height: 42px; text-align: center; font-size: 22px; line-height: 40px; background-image: url('../img/button0.png'); z-index: 100001" onclick="window.location = '../index.htm'">Main Menu</div>
+    <!-- game over/submit score panel -->
+    <div id="highscore" style="display: none; position:absolute; top: 0px; right: 0px; padding: 200px 80px 0px 80px; width: 330px; height: 432px; background-image: url('../img/scroll.png'); text-align: center; z-index: 100002">
       <form action="submithighscore.php" method="post" onsubmit="return checkForm()">
         <b>Game Over</b><br/>
         You survived for <span id="score"> </span> seconds.<br/><br/>

@@ -15,6 +15,7 @@ body {
   background-size: 100%;
   background-repeat: no-repeat;
   background-color: rgb(52, 58, 24);
+  color: black;
   font-family: "Georgia", "serif"; /* list of common fonts at http://ampsoft.net/webdesign-l/WindowsMacFonts.html */
 }
 a {
