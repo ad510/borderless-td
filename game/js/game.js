@@ -9,7 +9,7 @@
 todo:
 change projectile and player images
 resource text & background styling (main menu button in game)
-make new offset monsters when adding new tile
+make new offset monsters when adding new tile (to do correctly tiles further away from origin must generate more monsters)
 quadratic arrows: y = x - x^2 has y > 0 for 0 < x < 1 and vertex (0.5, 0.25)
 sound
 tell user when not enough wood to build?
@@ -38,6 +38,7 @@ var TowerCost = 10;
 var TowerReload = 2000;
 var TowerRange = 500;
 var ArrowSplash = MonsterSpd / ArrowSpd / UpdateRate * TowerRange;
+var MonsterSpawnIncrease = 1.001;
 var MonsterFollowRate = 5; // in frames (must be integer # of frames)
 var MonsterFollowDist = 500;
 var MonsterRad = 70;
@@ -149,7 +150,7 @@ function generate() {
       }
     }
     // make game gradually harder
-    TileMaxMonsters *= 1.001;
+    TileMaxMonsters *= MonsterSpawnIncrease;
   }
 }
 
