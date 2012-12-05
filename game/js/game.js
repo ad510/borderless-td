@@ -13,7 +13,6 @@ make new offset monsters when adding new tile
 quadratic arrows: y = x - x^2 has y > 0 for 0 < x < 1 and vertex (0.5, 0.25)
 sound
 tell user when not enough wood to build?
-server-side input validation
 pay attention to navigation & color balance
 check project requirements
 */
