@@ -59,6 +59,35 @@ function objDistSq(obj1, obj2) {
   return Math.pow(obj2.x - obj1.x, 2) + Math.pow(obj2.y - obj1.y, 2);
 }
 
+// returns object to play either specified ogg or mp3 sound (depending on browser support)
+// html5 audio described at http://html5doctor.com/html5-audio-the-state-of-play
+function sndNew(path, nCopies) {
+  var ret = {};
+  ret.next = 0;
+  ret.snds = [];
+  try {
+    for (var i = 0; i < nCopies; i++) {
+      ret.snds[i] = new Audio();
+      if (ret.snds[i].canPlayType && ret.snds[i].canPlayType("audio/ogg") != "") {
+        ret.snds[i].src = path + ".ogg";
+      }
+      else if (ret.snds[i].canPlayType && ret.snds[i].canPlayType("audio/mpeg") != "") {
+        ret.snds[i].src = path + ".mp3";
+      }
+    }
+  }
+  catch(e) {}
+  return ret;
+}
+
+// play specified sound array object
+function sndPlay(snd) {
+  if (snd.snds[snd.next] && snd.snds[snd.next].currentSrc) {
+    snd.snds[snd.next].play();
+    snd.next = (snd.next + 1) % snd.snds.length;
+  }
+}
+
 // move array1[index1] from array1 to array2
 function arrayMove(array1, index1, array2) {
   array2[array2.length] = array1[index1];

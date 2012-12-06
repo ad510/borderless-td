@@ -7,10 +7,10 @@
 
 /*
 todo:
-change projectile and player images
+move copyright notices after meta tags
+change player image?
 make new offset monsters when adding new tile (to do correctly tiles further away from origin must generate more monsters)
 quadratic arrows: y = x - x^2 has y > 0 for 0 < x < 1 and vertex (0.5, 0.25)
-sound (http://html5doctor.com/html5-audio-the-state-of-play/)
 tell user when not enough wood to build?
 pay attention to navigation & color balance
 check project requirements
@@ -42,6 +42,7 @@ var MonsterFollowRate = 5; // in frames (must be integer # of frames)
 var MonsterFollowDist = 500;
 var MonsterRad = 70;
 var NTreeType = 2;
+var NSndCopy = 5;
 
 // game state variables
 var mouseX, mouseY;
@@ -59,12 +60,25 @@ var tileRng = {
 var player;
 var tiles = [];
 
+// sounds
+var buildSnd;
+var arrowSnd;
+var hitSnds = [];
+
 // initialize game and start timer (called when page loaded)
 function load() {
+  // load sounds
+  buildSnd = sndNew("snd/build", NSndCopy);
+  arrowSnd = sndNew("snd/arrow", NSndCopy);
+  for (var i = 0; i < 2; i++) {
+    hitSnds[i] = sndNew("snd/hit" + i, NSndCopy);
+  }
+  // set up player
   player = objNew("img/player.png", 0, 0);
   player.health = PlayerMaxHealth;
   player.targetX = 0;
   player.targetY = 0;
+  // start timer
   update();
   setInterval("update()", UpdateRate);
 }
@@ -290,6 +304,7 @@ function simulate() {
           if (monster != undefined) {
             objRemove(monster.obj);
             arrayRemove(tiles[monster.col][monster.row].monsters, monster.index);
+            sndPlay(hitSnds[randInt(0, hitSnds.length)]);
           }
           // delete arrow
           objRemove(arrow);
@@ -395,6 +410,7 @@ function tileGen(i, j) {
 function cutterBuild() {
   if (!pause && wood >= CutterCost && cutterNew(player.x, player.y)) {
     wood -= CutterCost;
+    sndPlay(buildSnd);
   }
 }
 
@@ -417,6 +433,7 @@ function towerBuild() {
     tower.time = time;
     tile.towers[tile.towers.length] = tower;
     wood -= TowerCost;
+    sndPlay(buildSnd);
   }
 }
 
@@ -433,6 +450,7 @@ function arrowNew(x, y) {
   arrow.targetY = monster.obj.y;
   var tile = tiles[monster.col][monster.row];
   tile.arrows[tile.arrows.length] = arrow;
+  sndPlay(arrowSnd);
   return true;
 }
 
