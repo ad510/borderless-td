@@ -25,11 +25,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             <th style="width: 80px">Seconds Lasted</th>
           </tr>
         <?php
+// connect to database
 $con = new mysqli("localhost", "root", "5xvhK5zBC1", "borderless_td");
 if ($con->connect_errno) {
   echo("</table>Failed to connect to MySQL: " . $con->connect_error);
 }
 else {
+  // generate HTML table with top 5 high scores
   $res = $con->query("select * from High_scores order by score desc");
   $res->data_seek(0);
   for ($i = 0; $i < 5 && $row = $res->fetch_assoc(); $i++) {

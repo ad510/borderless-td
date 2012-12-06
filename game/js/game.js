@@ -6,13 +6,12 @@
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /*
-todo:
+potential future enhancements:
 change player image?
 make new offset monsters when adding new tile (to do correctly tiles further away from origin must generate more monsters)
 quadratic arrows: y = x - x^2 has y > 0 for 0 < x < 1 and vertex (0.5, 0.25)
 tell user when not enough wood to build?
-pay attention to navigation & color balance
-check project requirements
+health bar?
 */
 
 // constants (all lengths in pixels, all times in milliseconds)
