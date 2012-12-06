@@ -7,7 +7,6 @@
 
 /*
 todo:
-move copyright notices after meta tags
 change player image?
 make new offset monsters when adding new tile (to do correctly tiles further away from origin must generate more monsters)
 quadratic arrows: y = x - x^2 has y > 0 for 0 < x < 1 and vertex (0.5, 0.25)
