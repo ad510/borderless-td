@@ -65,7 +65,7 @@ function sndNew(path, nCopies) {
   var ret = {};
   ret.next = 0;
   ret.snds = [];
-  try {
+  if (window.Audio) {
     for (var i = 0; i < nCopies; i++) {
       ret.snds[i] = new Audio();
       if (ret.snds[i].canPlayType && ret.snds[i].canPlayType("audio/ogg") != "") {
@@ -76,7 +76,6 @@ function sndNew(path, nCopies) {
       }
     }
   }
-  catch(e) {}
   return ret;
 }
 
